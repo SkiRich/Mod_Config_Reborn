@@ -342,7 +342,7 @@ function ModConfig:CreateModConfigDialog()
         --TextColor = RGB(244, 228, 117),
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
-    }, title):SetText(T{ModConfig.StringIdBase, "Mod Options"})
+    }, title):SetText(T{ModConfig.StringIdBase, "Mod Config Reborn Mod Options"})
 
     -- Create a container to house a scrollable area (in case the options don't all fit on one
     -- screen) and its associated scrollbar. These two elements need to be siblings to work
@@ -738,8 +738,9 @@ function OnMsg.ClassesBuilt()
 
 end -- OnMsg.ClassesBuilt
 
-
-function OnMsg.Autorun()
+-- Setup ModConfig earlier so that it can be used in other onmsg classes as well as CityStart and LoadGame
+function OnMsg.ClassesGenerate()
+--function OnMsg.Autorun()
     ModConfig:Load()
     ModConfig.internal_token = 70492318 -- en entirely arbitrary token, randomly generated
     Msg("ModConfigReady")
