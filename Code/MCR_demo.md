@@ -93,9 +93,7 @@ function OnMsg.ModConfigReady()
     local load_count = ModConfig:Get("ModConfigDemo", "LoadCount") or 1
     load_count = load_count + 1
     ModConfig:Set("ModConfigDemo", "LoadCount", load_count)
-    if rawget(_G, "lcPrint") then
-        lcPrint("Mod Config Demo has been loaded "..load_count.." times")
-    end
+
 end
 
 function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value)
