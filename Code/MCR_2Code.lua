@@ -14,7 +14,7 @@ local lf_print   = false  -- Setup debug printing in local file
 
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
-g_ModConfigLoaded = nil -- set detection mechanism var. Set true in ClassesGenerate
+g_ModConfigLoaded = nil -- set detection mechanism var. Set true in ClassesGenerate()
 
 
 --[[
@@ -267,12 +267,8 @@ end -- ModConfig:Save
 
 
 ----------------------------------- ModConfig:IsReady --------------------------------------------------
--- Sometimes you want to do something very early on, when ModConfig might not have loaded yet
--- because there's no way to set mod load order in Surviving Mars. If you have a hard dependency on
--- ModConfig, you can just put it in your OnMsg.ModConfigChanged handler and it will run as soon as
---~ *************** Needs Update **********************
--- ModConfig is ready, but otherwise you can check if ModConfig is enabled and ready by doing
--- "if rawget(_G, "ModConfig") and ModConfig:IsReady() then ..."
+-- Returns true if internal token is set.
+-- internal token only is set when ModConfig has completed loading.
 function ModConfig:IsReady()
     -- The internal token is set immediately before firing ModConfigReady, so we can check for it to
     -- determine whether we've finished loading.
@@ -302,9 +298,7 @@ function ModConfig.OpenDialog()
 end -- ModConfig.OpenDialog
 
 ---------------------------------- ModConfig:CreateModConfigDialog ------------------------------
--- There are some parts of this mod that I think are good enough to be worth copying. This is not
--- one of those parts. This is an ugly mess that happens to work. Do not use this as an example of
--- the right way to create a dialogue box.
+-- function that begins the painting process of a xwindow type dialogs on screen
 function ModConfig:CreateModConfigDialog()
     local interface = GetInGameInterface()
     if interface.idModConfigDlg then
@@ -357,7 +351,7 @@ function ModConfig:CreateModConfigDialog()
         TextHAlign = "center",
         TextFont = "HUDStat",
         TextStyle = "HUDStat",
-        --TextColor = RGB(244, 228, 117),
+        --TextColor = RGB(244, 228, 117), -- Sagan
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
     }, title):SetText(T{ModConfig.StringIdBase, "Mod Config Reborn Mod Options"})
@@ -390,7 +384,7 @@ function ModConfig:CreateModConfigDialog()
             TextAlign = "center",
             TextFont = "InfoText",
             TextStyle = "InfoText",
-            --TextColor = RGB(233, 242, 255),
+            --TextColor = RGB(233, 242, 255), -- Sagan
             RolloverTextColor = RGB(233, 242, 255),
             Translate = true
         }, content):SetText(T{ModConfig.StringIdBase + 1,
@@ -402,7 +396,7 @@ function ModConfig:CreateModConfigDialog()
             TextAlign = "center",
             TextFont = "InfoText",
             TextStyle = "InfoText",
-            --TextColor = RGB(233, 242, 255),
+            --TextColor = RGB(233, 242, 255), -- Sagan
             RolloverTextColor = RGB(233, 242, 255),
             Translate = true
         }, content)
