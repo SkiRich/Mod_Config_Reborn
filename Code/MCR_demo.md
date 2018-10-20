@@ -13,7 +13,7 @@
 
 function OnMsg.ModConfigReady()
     -- Randomly generated number to start counting from, to generate IDs for translatable strings
-    local StringIdBase = 76837246
+    local StringIdBase = 79873450923
 
     -- Register this mod's name and description
     ModConfig:RegisterMod("ModConfigDemo", -- ID
@@ -97,15 +97,8 @@ function OnMsg.ModConfigReady()
 end
 
 function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value)
-    if rawget(_G, "lcPrint")  and mod_id == "ModConfigDemo" then
-        lcPrint(string.format("Option '%s' changed from %s to %s", option_id, old_value, value))
-    end
-end
-
-function OnMsg:Autorun()
-    if rawget(_G, "lcPrint") then
-        lcPrint(string.format("ModConfig Available: %s", not not rawget(_G, "ModConfig")))
-        lcPrint(string.format("ModConfig Ready: %s", rawget(_G, "ModConfig") and ModConfig:IsReady()))
+    if g_ModConfigLoaded and mod_id == "ModConfigDemo" then
+        print(string.format("Option '%s' changed from %s to %s", option_id, old_value, value))
     end
 end
 ```
