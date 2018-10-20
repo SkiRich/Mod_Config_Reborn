@@ -5,6 +5,8 @@
 -- Author @SkiRich
 -- All rights reserved.
 -- Created Oct 14th, 2018
+-- Updated Oct 20th, 2018
+
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
@@ -12,6 +14,22 @@ local lf_print   = false  -- Setup debug printing in local file
 
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
+g_ModConfigLoaded = nil -- set detection mechanism var. Set true in ClassesGenerate
+
+
+--[[
+    Handling messages sent by this mod:
+
+    function OnMsg.ModConfigReady()
+        Sent once ModConfig has finished loading and its safe to start using.
+
+    function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value, token)
+        Sent whenever any mod option is changed.
+        The 'token' parameter matches the token given to ModConfig:Set(). The intention here is to
+        make it easier for you to filter messages you shouldnt be responding to; if you set an
+        option yourself you might want to pass in a token so that your handler can check for it and
+        ignore the message.
+--]]
 
 
 --------------------- ModConfig:RegisterMod ----------------------------------------------------------
@@ -739,13 +757,14 @@ function OnMsg.ClassesBuilt()
 end -- OnMsg.ClassesBuilt
 
 -- Setup ModConfig earlier so that it can be used in other onmsg classes as well as CityStart and LoadGame
+-- Originally Autorun
 function OnMsg.ClassesGenerate()
---function OnMsg.Autorun()
-    ModConfig:Load()
-    ModConfig.internal_token = 70492318 -- en entirely arbitrary token, randomly generated
-    Msg("ModConfigReady")
+  ModConfig:Load()
+  ModConfig.internal_token = 70492318 -- en entirely arbitrary token, randomly generated
+  g_ModConfigLoaded = true -- Set/reset testing var here.
+  ModLog("Mod Config Reborn Initialized")
+  Msg("ModConfigReady")
 end -- OnMsg.Autorun
-
 
 function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value, token)
     if token ~= ModConfig.internal_token then

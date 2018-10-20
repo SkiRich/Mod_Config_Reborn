@@ -1,27 +1,28 @@
+-- Code developed for Mod Config Reborn
+-- Code originally developed by Waywocket as Mod Config
+-- Modified to work with Gagarin Patch
+-- Re-written to optimize code
+-- Author @SkiRich
+-- All rights reserved.
+-- Created Oct 14th, 2018
+-- Updated Oct 20th, 2018
 
---[[
-    Handling messages sent by this mod:
+--[[  Use this code to detect modconfig on startup obviously dont copy the remarks
 
-    function OnMsg.ModConfigReady()
-        Sent once ModConfig has finished loading and its safe to start using.
-
-    function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value, token)
-        Sent whenever any mod option is changed.
-        The 'token' parameter matches the token given to ModConfig:Set(). The intention here is to
-        make it easier for you to filter messages you shouldnt be responding to; if you set an
-        option yourself you might want to pass in a token so that your handler can check for it and
-        ignore the message.
---]]
-
-
---[[  Use this code to detect modconfig on startup
-
+-- these variables go at the top of your lua script file
+-- only at the top, do not set these too far down.
+-- be carefull to use locals where stated
 local mod_name = "@MOD" -- Replace @MOD with your mods name.  It will show up in the logs.
 local lf_print = false -- Used for debugging
 local ModConfig_id = "1542863522"
 local ModConfigWaitThread = false
 g_ModConfigLoaded = nil
 
+
+
+-- This code is called from some other function or OnMsg
+-- typically OnMsg.CityStart() OnMsg.NewMapLoaded() or OnMsg.LoadGame()
+-- but can be called from just about any other function
 -- wait for mod config to load or fail out and use defaults
 local function WaitForModConfig()
 	if (not ModConfigWaitThread) or (not IsValidThread(ModConfigWaitThread)) then
