@@ -1,3 +1,4 @@
+```
 -- Code developed for Mod Config Reborn
 -- Code originally developed by Waywocket as Mod Config
 -- Modified to work with Gagarin Patch
@@ -69,3 +70,4 @@ local function WaitForModConfig()
 end -- WaitForModConFig
 
 --]]
+```
