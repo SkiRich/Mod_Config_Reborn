@@ -7,4 +7,8 @@ PlaceObj('ModItemCode', {
 	'name', "MCR_2Code",
 	'FileName', "Code/MCR_2Code.lua",
 }),
+PlaceObj('ModItemCode', {
+	'name', "MCR_3Options",
+	'FileName', "Code/MCR_3Options.lua",
+}),
 }
