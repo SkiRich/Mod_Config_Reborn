@@ -493,12 +493,8 @@ function ModConfig:CreateModConfigDialog()
         VAlign = "center",
         TextFont = "HUDStat",
         TextStyle = "HUDStat",
-        --TextColor = RGB(254, 237, 122),
         RolloverTextColor = RGB(255, 255, 255),
         Translate = true,
-        --CalcTextColor = function(self)
-        --    return self.parent.rollover and self.RolloverTextColor or self.TextColor
-        --end,
     }, close_button):SetText(T{1011, "Close"})
     XAction:new({
         OnActionEffect = "close",
@@ -555,8 +551,6 @@ function ModConfig:AddModSettingsToDialog(parent, mod_id, mod_registry)
         TextHAlign = "center",
         TextFont = "HUDStat",
         TextStyle = "HUDStat",
-        --TextFont = "InfopanelTitle",
-        --TextColor = RGB(244, 228, 117),
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
     }, section_header):SetText(mod_name)
@@ -572,10 +566,8 @@ function ModConfig:AddModSettingsToDialog(parent, mod_id, mod_registry)
             order = option_params.order
         }
     end
-    -- To sort by "order, name" we can sort by name and then resort the result by order.
-    TSort(sortable, "name")
-    -- TSort converts all its fields to text, so we can't use it if we want 9 to sort before 10
-    --table.stable_sort(sortable, function(a, b) return a.order < b.order end)
+    -- To sort by "order, name" we can sort by name and then re-sort the result by order.
+    TSort(sortable, "name")  -- TSort converts all its fields to text, so we can't use it if we want 9 to sort before 10
     table.sortby_field(sortable, "order")
 
     for _, sorted_option_params in ipairs(sortable) do
@@ -591,28 +583,25 @@ function ModConfig:AddModSettingsToDialog(parent, mod_id, mod_registry)
             TextHAlign = "left",
             RolloverTemplate = "Rollover",
             RolloverAnchor = "bottom",
-            --RolloverTextColor = RGB(244, 228, 117),
         }, parent)
         if option_params.desc and option_params.desc ~= "" then
             option_section:SetRolloverTitle(T{option_params.name, UICity})
             option_section:SetRolloverText(T{option_params.desc, UICity})
         end
 
-        XText:new({
+         XText:new({
             Id = "idLabel",
             Margins = box(0, 0, 0, 0),
             Padding = box(8, 2, 2, 2),
-            --VAlign = "center",
+            VAlign = "center",
             TextFont = "InfoText",
             TextStyle = "InfoText",
             TextHAlign = "left",
-            --TextColor = RGB(255, 255, 255),
-            --RolloverTextColor = RGB(255, 215, 0),
             Background = RGBA(0, 0, 0, 0),
             Translate = true
         }, option_section):SetText(option_params.name)
-
         ModConfig:AddOptionControl(option_section, mod_id, option_id)
+        option_section.idLabel:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
     end
 end -- ModConfig:AddModSettingsToDialog
 

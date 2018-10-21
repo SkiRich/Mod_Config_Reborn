@@ -144,8 +144,6 @@ function XModConfigNumberInput:Init()
         VAlign = "center",
         MinWidth = 60,
         MaxWidth = 70,
-        --TextFont = "PGResource",
-        --TextColor = RGBA(255, 248, 233, 255),
         TextFont = "UIPage",
         TextStyle = "UIPage",
         RolloverTextColor = RGBA(255, 255, 255, 255),
@@ -180,6 +178,7 @@ function XModConfigNumberInput:Init()
         step10 = self.Step * 10,
         step100 = self.Step * 100,
     }
+    self.idAmount:SetRolloverTextColor(RGB(255, 215, 0)) -- -- RolloverTextColor is Gold
     self.idRemove:SetRolloverTitle(self.OptionName)
     self.idAdd:SetRolloverTitle(self.OptionName)
     self.idRemove:SetRolloverText(self.OptionDesc or T{
