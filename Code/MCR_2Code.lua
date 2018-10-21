@@ -399,11 +399,6 @@ function ModConfig:CreateModConfigDialog()
             RolloverTextColor = RGB(233, 242, 255),
             Translate = true
         }, content)
-        ModConfig.idResetButton = XModConfigInternalToggleButton:new({
-            Id = "idResetButton",
-            Dock = "right",
-            MaxHeight = 35,
-        }, content)
     end
 
     -- Add all the options to the idModContentsList container

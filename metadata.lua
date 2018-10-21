@@ -8,7 +8,7 @@ return PlaceObj('ModDef', {
 	'author', "SkiRich",
 	'version', 6,
 	'lua_revision', 237096,
-	'code', {"Code/MCR_1Classes.lua","Code/MCR_2Code.lua"},
+	'code', {"Code/MCR_1Classes.lua","Code/MCR_2Code.lua","Code/MCR_3Options.lua"},
 	'saved', 1540065893,
 	'screenshot1', "Images/ModConfigRebornLogo.png",
 	'screenshot2', "Images/ModConfigScreen.png",
