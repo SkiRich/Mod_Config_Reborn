@@ -185,6 +185,22 @@ function ModConfig:GetDefault(mod_id, option_id)
     return mod_options and mod_options[option_id] and mod_options[option_id].default
 end -- ModConfig:GetDefault
 
+----------------------------------- ModConfig:ResetAllToDefault ----------------------------------------
+function ModConfig:ResetAllToDefaults()
+	local registry = self.registry
+	ModConfig.data = {} -- blank out the data
+	for mod_id in pairs(registry) do
+		for option_id in pairs(registry[mod_id].options) do
+			local defaultvalue = ModConfig:GetDefault(mod_id, option_id)
+			if type(defaultvalue) ~= "nil" then
+				if lf_print then print("Resetting: ", mod_id, " ", option_id, " to ", tostring(defaultvalue)) end
+				ModConfig:Set(mod_id, option_id, defaultvalue)
+			end
+		end -- option_id
+  end -- for mod_id
+  ModConfig:Save()
+end -- ModConfig:ResetAllToDefault()
+
 
 ----------------------------------- ModConfig:Get ------------------------------------------------------
 -- Get the current or default value of an option.
