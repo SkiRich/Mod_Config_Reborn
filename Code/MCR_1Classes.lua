@@ -146,7 +146,6 @@ function XModConfigNumberInput:Init()
         MaxWidth = 70,
         TextFont = "UIPage",
         TextStyle = "UIPage",
-        RolloverTextColor = RGBA(255, 255, 255, 255),
         WordWrap = false,
         TextHAlign = "center",
         TextVAlign = "center",
@@ -301,8 +300,6 @@ function XModConfigSlider:Init()
     self.idLabel = XText:new({
     	  TextFont = "InfoText",
         TextStyle = "InfoText",
-        --TextColor = RGBA(255, 248, 233, 255),
-        RolloverTextColor = RGBA(255, 255, 255, 255),
         Translate = true,
         Margins = box(10, 0, 10, 0),
         Dock = "right",
