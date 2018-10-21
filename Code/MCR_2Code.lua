@@ -387,8 +387,7 @@ function ModConfig:CreateModConfigDialog()
             --TextColor = RGB(233, 242, 255), -- Sagan
             RolloverTextColor = RGB(233, 242, 255),
             Translate = true
-        }, content):SetText(T{ModConfig.StringIdBase + 1,
-                "Mouse over options to see a description of what they mean."})
+        }, content):SetText(T{ModConfig.StringIdBase + 1, "Mouse over options to see a description of what they mean."})
         ModConfig.space_label = XText:new({
         	  Id = "id_space_label",
             Padding = box(5, 2, 5, 2),
@@ -399,6 +398,11 @@ function ModConfig:CreateModConfigDialog()
             --TextColor = RGB(233, 242, 255), -- Sagan
             RolloverTextColor = RGB(233, 242, 255),
             Translate = true
+        }, content)
+        ModConfig.idResetButton = XModConfigInternalToggleButton:new({
+            Id = "idResetButton",
+            Dock = "right",
+            MaxHeight = 35,
         }, content)
     end
 

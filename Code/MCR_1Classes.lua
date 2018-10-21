@@ -12,6 +12,26 @@ local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
 
 ----------------------------------------------------------------------------------------------------------
+DefineClass.XModConfigInternalToggleButton = {
+    __parents = {
+        "XToggleButton"
+    },
+    properties = {
+        { category = "Image", id = "DisabledImage", editor = "text", default = "UI/Icons/traits_approve_disable.tga" },
+        { category = "Image", id = "EnabledImage",  editor = "text", default = "UI/Icons/traits_approve.tga" },
+    },
+    Dock = "right",
+    HAlign = "right",
+    VAlign = "center",
+    TextFont = "InfoText",
+    TextStyle = "InfoText",
+    Background = RGBA(0, 0, 0, 0),
+    RolloverBackground = RGBA(0, 0, 0, 0),
+    PressedBackground = RGBA(0, 0, 0, 0),
+    MouseCursor = "UI/Cursors/Rollover.tga",
+}
+
+
 DefineClass.XModConfigToggleButton = {
     __parents = {
         "XToggleButton"
