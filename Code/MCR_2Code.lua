@@ -185,6 +185,22 @@ function ModConfig:GetDefault(mod_id, option_id)
     return mod_options and mod_options[option_id] and mod_options[option_id].default
 end -- ModConfig:GetDefault
 
+----------------------------------- ModConfig:ResetAllToDefault ----------------------------------------
+function ModConfig:ResetAllToDefaults()
+	local registry = self.registry
+	ModConfig.data = {} -- blank out the data
+	for mod_id in pairs(registry) do
+		for option_id in pairs(registry[mod_id].options) do
+			local defaultvalue = ModConfig:GetDefault(mod_id, option_id)
+			if type(defaultvalue) ~= "nil" then
+				if lf_print then print("Resetting: ", mod_id, " ", option_id, " to ", tostring(defaultvalue)) end
+				ModConfig:Set(mod_id, option_id, defaultvalue)
+			end
+		end -- option_id
+  end -- for mod_id
+  ModConfig:Save()
+end -- ModConfig:ResetAllToDefault()
+
 
 ----------------------------------- ModConfig:Get ------------------------------------------------------
 -- Get the current or default value of an option.
@@ -249,6 +265,15 @@ function ModConfig:Load()
     if not self.registry then self.registry = {} end
 end -- ModConfig:Load
 
+----------------------------------- ModConfig:CalcDataSpace -------------------------------------------
+-- calculates the space used inside ModConfig.data
+function ModConfig:CalcDataSpace()
+    local mod_data  = self.data or {}
+    local save_data = Compress(ValueToLuaCode(mod_data))
+    local dataspace = 100* string.len(save_data) / const.MaxModDataSize
+    return dataspace
+end -- ModConfig:CalcDataSpace()
+
 ----------------------------------- ModConfig:Save -----------------------------------------------------
 -- Save all of the current settings to disk.
 -- ModConfig.data (self.data) is where all 'changed' or 'set' values reside
@@ -257,10 +282,7 @@ function ModConfig:Save()
     local save_data = Compress(ValueToLuaCode(mod_data))
     local interface = GetInGameInterface()
     if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
-        ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7,
-            "(Storage space in use: <used>%)",
-            used = 100* string.len(save_data) / const.MaxModDataSize,
-        })
+        ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
     end
     WriteModPersistentData(save_data)
 end -- ModConfig:Save
@@ -351,7 +373,6 @@ function ModConfig:CreateModConfigDialog()
         TextHAlign = "center",
         TextFont = "HUDStat",
         TextStyle = "HUDStat",
-        --TextColor = RGB(244, 228, 117), -- Sagan
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
     }, title):SetText(T{ModConfig.StringIdBase, "Mod Config Reborn Mod Options"})
@@ -377,29 +398,30 @@ function ModConfig:CreateModConfigDialog()
 
     -- Intro text
     if self.registry and next(self.registry) ~= nil then
-        XText:new({
-        	  Id = "idMCRintroText1",
-            Padding = box(5, 2, 5, 2),
-            VAlign = "center",
-            TextAlign = "center",
-            TextFont = "InfoText",
-            TextStyle = "InfoText",
-            --TextColor = RGB(233, 242, 255), -- Sagan
-            RolloverTextColor = RGB(233, 242, 255),
-            Translate = true
-        }, content):SetText(T{ModConfig.StringIdBase + 1,
-                "Mouse over options to see a description of what they mean."})
-        ModConfig.space_label = XText:new({
-        	  Id = "id_space_label",
-            Padding = box(5, 2, 5, 2),
-            VAlign = "center",
-            TextAlign = "center",
-            TextFont = "InfoText",
-            TextStyle = "InfoText",
-            --TextColor = RGB(233, 242, 255), -- Sagan
-            RolloverTextColor = RGB(233, 242, 255),
-            Translate = true
-        }, content)
+      XText:new({
+      	  Id = "idMCRintroText1",
+          Padding = box(5, 2, 5, 2),
+          VAlign = "center",
+          TextAlign = "center",
+          TextFont = "InfoText",
+          TextStyle = "InfoText",
+          RolloverTextColor = RGB(233, 242, 255),
+          Translate = true
+      }, content):SetText(T{ModConfig.StringIdBase + 1,
+              "Mouse over options to see a description of what they mean."})
+      ModConfig.space_label = XText:new({
+      	  Id = "id_space_label",
+          Padding = box(5, 2, 5, 2),
+          VAlign = "center",
+          TextAlign = "center",
+          TextFont = "InfoText",
+          TextStyle = "InfoText",
+          RolloverTextColor = RGB(233, 242, 255),
+          Translate = true
+      }, content)
+      content.idMCRintroText1:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
+      content.id_space_label:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
+      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
     end
 
     -- Add all the options to the idModContentsList container

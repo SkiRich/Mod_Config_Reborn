@@ -12,6 +12,7 @@ local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
 
 ----------------------------------------------------------------------------------------------------------
+
 DefineClass.XModConfigToggleButton = {
     __parents = {
         "XToggleButton"
