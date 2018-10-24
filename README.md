@@ -15,6 +15,7 @@ Use this mod to create user settable options for your mods.
 Gagarin (Space Race) is significantly different from previous versions of the game.
 Read the user/modder guide to see what needs to be changed to get this version working with your your mod.
 You will need to make minor adjustments otherwise Mod Config will not work properly with your mod.
+
 Guide Link > [Modders Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=1543466595)
 
 #### Legacy Data
@@ -32,17 +33,19 @@ This is a team project composed of Waywocket, SkiRich and ChoGGi.
 
 Use the Need Help discussion in this mod for help or find us on discord.
 [Surviving Mars Discord](https://discord.gg/eS2Nap)
+
 Report bugs in the Bug Report discussion in this mod.
 
 Dont forget to VOTE UP!
 
 ### Other Links
-[Mod Config Reborn on Github](https://github.com/SkiRich/Mod_Config_Reborn)
-Nexus - When Gagarin Reborn is no longer a release candidate - before Gararin Patch rolls.
+- [Mod Config Reborn on Github](https://github.com/SkiRich/Mod_Config_Reborn)
+- [Mod Config Reborn on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=1542863522)
+- Nexus - When Gagarin Reborn is no longer a release candidate - before Gararin Patch rolls.
 
-**Some interesting Collections:**
-[SkiRich's Mod Collection](url=https://steamcommunity.com/workshop/filedetails/?id=1418440299)
-[ChoGGi's Mod Collection](url=https://steamcommunity.com/workshop/filedetails/?id=1411210466)
+### Some interesting Collections:
+- [SkiRich's Mod Collection](https://steamcommunity.com/workshop/filedetails/?id=1418440299)
+- [ChoGGi's Mod Collection](https://steamcommunity.com/workshop/filedetails/?id=1411210466)
 
 
 
