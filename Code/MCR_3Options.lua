@@ -3,9 +3,9 @@
 -- Modified to work with Gagarin Patch
 -- Re-written to optimize code
 -- Author @SkiRich
--- All rights reserved.
+-- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Oct 21st, 2018
+-- Updated Oct 24th, 2018
 
 function OnMsg.ModConfigReady()
     local StringIdBase = ModConfig.StringIdBase
