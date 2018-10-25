@@ -4,11 +4,11 @@
 -- Modified to work with Gagarin Patch
 -- Re-written to optimize code
 -- Author @SkiRich
--- All rights reserved.
+-- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Oct 20th, 2018
+-- Updated Oct 24th, 2018
 
---[[  Use this code to detect modconfig on startup obviously dont copy the remarks
+--[[  Use this code to detect modconfig on startup obviously dont copy this line
 
 -- these variables go at the top of your lua script file
 -- only at the top, do not set these too far down.
