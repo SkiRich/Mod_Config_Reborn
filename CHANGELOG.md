@@ -1,4 +1,8 @@
 # Mod Config Reborn Changelog
+## v2.2.2 11/11/2018 10:26:03 PM
+#### Changed
+- g_ModConfigLoaded = false instead of nil
+--------------------------------------------------------
 ## v2.2.1 Oct 28th, 2018
 - First static release of Mod Config Reborn
 
