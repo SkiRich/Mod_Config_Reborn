@@ -17,7 +17,7 @@ local mod_name = "@MOD" -- Replace @MOD with your mods name.  It will show up in
 local lf_print = false -- Used for debugging
 local ModConfig_id = "1542863522"
 local ModConfigWaitThread = false
-g_ModConfigLoaded = nil
+g_ModConfigLoaded = false
 
 
 

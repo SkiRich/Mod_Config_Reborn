@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Oct 24th, 2018
+-- Updated Nov 11th, 2018
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -14,7 +14,7 @@ local lf_print   = false  -- Setup debug printing in local file
 
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
-g_ModConfigLoaded = nil -- set detection mechanism var. Set true in ClassesGenerate()
+g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
 
 
 --[[
