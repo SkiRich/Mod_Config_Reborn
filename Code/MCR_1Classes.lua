@@ -193,9 +193,11 @@ function XModConfigNumberInput:Init()
     self.idAdd:SetRolloverHint(AddRemoveRolloverHint)
     self:Set(ModConfig:Get(self.ModId, self.OptionId))
     self.idAdd.MinWidth    = 20 -- Fix for Gagarin triangle issue
-    self.idAdd.Columns     = 2  -- Fix for Gagarin triangle issue
-    self.idRemove.MinWidth = 20 -- Fix for Gagarin triangle issue
-    self.idRemove.Columns  = 2  -- Fix for Gagarin triangle issue
+    self.idAdd.Columns     = 1  -- Fix for Gagarin triangle issue
+    self.idAdd.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue
+    self.idRemove.MinWidth    = 20 -- Fix for Gagarin triangle issue
+    self.idRemove.Columns     = 1  -- Fix for Gagarin triangle issue
+    self.idRemove.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue
 end
 
 function XModConfigNumberInput:Set(value, update)

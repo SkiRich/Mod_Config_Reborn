@@ -1,4 +1,27 @@
 # Mod Config Reborn Changelog
+## v2.2.3 11/17/2018 5:56:23 PM
+#### Changed
+- mcr classes trianglle fix
+  - self.idAdd.MinWidth    = 20 -- Fix for Gagarin triangle issue
+  - self.idAdd.Columns     = 1  -- Fix for Gagarin triangle issue
+  - self.idAdd.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue
+  - self.idRemove.MinWidth    = 20 -- Fix for Gagarin triangle issue
+  - self.idRemove.Columns     = 1  -- Fix for Gagarin triangle issue
+  - self.idRemove.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue 
+
+#### Added
+
+#### Removed
+
+#### Fixed Issues
+
+#### Open Issues
+
+#### Deprecated
+
+#### Todo
+
+--------------------------------------------------------
 ## v2.2.2 11/11/2018 10:26:03 PM
 #### Changed
 - g_ModConfigLoaded = false instead of nil
