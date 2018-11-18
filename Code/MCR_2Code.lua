@@ -345,10 +345,13 @@ function ModConfig:CreateModConfigDialog()
     dlg:SetFocus(true)
     dlg:SetVisible(false)
 
+
     -- internal window container for dlg for background
     local win = XWindow:new({
         Dock = "box",
     }, dlg)
+
+
     XImage:new({
         Image = "UI/Infopanel/pad_2.tga",
         ImageFit = "stretch",
@@ -358,12 +361,23 @@ function ModConfig:CreateModConfigDialog()
         TileFrame = true,
     }, win)
 
+		dlg.idSizeControl = XSizeControl:new({
+		}, dlg)
+		dlg.idMoveControl = XMoveControl:new({
+			dialog = dlg,
+			ZOrder = 2,
+		}, dlg)
+		dlg.idMoveControl:SetDock("top")
+		-- size of title (have to sub this much from the frame below as well)
+		dlg.idMoveControl:SetPadding(box(0, 40, 0, 0))
+
     -- Add the title
     local title = XFrame:new({
     	  Id = "idMCRTitleFrame",
         Image = "UI/Infopanel/title.tga",
-        Margins = box(2, 0, 2, 2),
+        Margins = box(2,-40, 2, 2),
     }, dlg)
+
     XText:new({
     	  Id = "idMCRTitle",
         Margins = box(0, 0, 0, 0),
