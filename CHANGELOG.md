@@ -7,20 +7,7 @@
   - self.idAdd.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue
   - self.idRemove.MinWidth    = 20 -- Fix for Gagarin triangle issue
   - self.idRemove.Columns     = 1  -- Fix for Gagarin triangle issue
-  - self.idRemove.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue 
-
-#### Added
-
-#### Removed
-
-#### Fixed Issues
-
-#### Open Issues
-
-#### Deprecated
-
-#### Todo
-
+  - self.idRemove.ColumnsUse  = "aaaaa"  -- Fix for Gagarin triangle issue
 --------------------------------------------------------
 ## v2.2.2 11/11/2018 10:26:03 PM
 #### Changed
