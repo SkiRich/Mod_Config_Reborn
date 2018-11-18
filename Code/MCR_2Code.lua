@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Nov 11th, 2018
+-- Updated Nov 17th, 2018
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -397,6 +397,8 @@ function ModConfig:CreateModConfigDialog()
     -- this wrapper.
     local scroll_container = XWindow:new({
     	Id = "id_scroll_container",
+    	Margins = box(2, -1, 0, 1),
+    	BorderWidth = 1,
     }, dlg)
 
     local content = XContentTemplateScrollArea:new({
@@ -406,7 +408,7 @@ function ModConfig:CreateModConfigDialog()
         FocusedBackground = RGBA(0, 0, 0, 0),
         RolloverBackground = RGBA(0, 0, 0, 0),
         Padding = box(0, 0, 0, 0),
-        Margins = box(0, -2, 0, 45),
+        Margins = box(0, 0, 0, 0),
         VScroll = "idScroll",
     }, scroll_container)
 

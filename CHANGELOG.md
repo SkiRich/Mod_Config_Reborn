@@ -1,4 +1,12 @@
 # Mod Config Reborn Changelog
+## v2.3.0 11/17/2018 11:03:28 PM
+#### Added
+- added legacyCode.md file for sample code for original Mod Config
+- added border to id_scroll_window
+- code from choggi fork for allowing dialog to move.
+- dlg.idSizeControl = XSizeControl:new({ }, dlg)
+- dlg.idMoveControl = XMoveControl:new({
+--------------------------------------------------------
 ## v2.2.3 11/17/2018 5:56:23 PM
 #### Changed
 - mcr classes trianglle fix

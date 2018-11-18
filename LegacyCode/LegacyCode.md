@@ -1,3 +1,4 @@
+```
 local function LegacyDailyPopup()
     CreateRealTimeThread(function()
         local params = {
@@ -20,3 +21,4 @@ function OnMsg.NewDay()
     LegacyDailyPopup()
   end -- if table
 end -- NewDay
+```
