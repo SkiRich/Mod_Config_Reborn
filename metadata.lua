@@ -1,8 +1,8 @@
 return PlaceObj('ModDef', {
 	'title', "Mod Config Reborn",
-	'description', "Mod Config Reborn\nv2.2.2\nOriginal Code by Waywocket\nRebuilt by SkiRich\nContributions by ChoGGi",
+	'description', "Mod Config Reborn\nv2.2.3\nOriginal Code by Waywocket\nRebuilt by SkiRich\nContributions by ChoGGi",
 	'image', "Images/ModConfigRebornLogo.png",
-	'last_changes', "v2.2.2 No 11th, 2018\n- Final Build for Gagarin",
+	'last_changes', "v2.2.3 Nov 17th, 2018\n- Build for Gagarin",
 	'id', "bpy1eJQ",
 	'steam_id', "1542863522",
 	'author', "SkiRich",
