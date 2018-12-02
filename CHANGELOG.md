@@ -3,6 +3,10 @@
 #### Added
 - Interface checks to safe space functions to prevent log spam on nil interface.
   - function OnMsg.SafeAreaMarginsChanged()
+- Added Ignore_Files to metadata
+  - moved preview image to root
+  - ignoring git and image dirs
+  - modified .gitignore to ignore root image files.
 
 #### Fixed Issues
 - Changing display res causes nil errors to interface var in SafeAreaMarginsChanged()
