@@ -801,7 +801,7 @@ end -- OnMsg.ModConfigChanged
 -- Determine whether we need to show/hide the scroll bar when the UI scale changes
 function OnMsg.SafeAreaMarginsChanged()
     local interface = GetInGameInterface()
-    if interface.idModConfigDlg then
+    if interface and interface.idModConfigDlg and interface.idModConfigDlg.idScroll then
         interface.idModConfigDlg.idScroll:ShowHide()
     end
 end -- OnMsg.SafeAreaMarginsChanged

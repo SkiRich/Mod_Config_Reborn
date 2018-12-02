@@ -1,4 +1,16 @@
 # Mod Config Reborn Changelog
+## v2.3.1 12/02/2018 5:44:28 PM
+#### Added
+- Interface checks to safe space functions to prevent log spam on nil interface.
+  - function OnMsg.SafeAreaMarginsChanged()
+- Added Ignore_Files to metadata
+  - moved preview image to root
+  - ignoring git and image dirs
+  - modified .gitignore to ignore root image files.
+
+#### Fixed Issues
+- Changing display res causes nil errors to interface var in SafeAreaMarginsChanged()
+--------------------------------------------------------
 ## v2.3.0 11/17/2018 11:03:28 PM
 #### Added
 - added legacyCode.md file for sample code for original Mod Config
