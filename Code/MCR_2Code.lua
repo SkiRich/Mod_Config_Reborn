@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Nov 17th, 2018
+-- Updated Dec 3rd, 2018
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -15,6 +15,12 @@ local lf_print   = false  -- Setup debug printing in local file
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
 g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
+
+-- Initialize LocalStorage if not already present
+-- Used for writing to file
+if type(LocalStorage.ModPersistentData) ~= "table" then
+    LocalStorage.ModPersistentData = {}
+end -- if type
 
 
 --[[
@@ -274,17 +280,50 @@ function ModConfig:CalcDataSpace()
     return dataspace
 end -- ModConfig:CalcDataSpace()
 
+
+----------------------------------- ModConfig:ReadSettingsFile() --------------------------------------
+-- read the localstorage settings file
+function ModConfig:ReadSettingsFile()
+	local LocalStorage = LocalStorage
+	local local_save_data
+	if LocalStorage.ModPersistentData["ModConfigReborn"] then
+		local_save_data = LocalStorage.ModPersistentData["ModConfigReborn"]
+	end -- if LocalStorage
+end -- ModConfig:ReadSettingsFile()
+
+----------------------------------- ModConfig:SaveSettingsFile() --------------------------------------
+-- save the localstorage settings file
+function ModConfig:SaveSettingsFile()
+	local LocalStorage = LocalStorage
+	local mod_data = self.data or {}
+  local lua_save_data = ValueToLuaCode(mod_data)
+  local err, local_save_data = LuaCodeToTuple(lua_save_data)
+  if not err then
+  	LocalStorage.ModPersistentData["ModConfigReborn"] = local_save_data
+    local success = SaveLocalStorage()
+    if not success then
+    	print("ModConfig:SaveSettingsFile() SaveLocalStorage Errors occurred")
+    	ModLog("MCR Error: Could not save to local storage.")
+    end -- if not success
+  else
+  	print("ModConfig:SaveSettingsFile() LuaCodeToTuple Errors:", tostring(err))
+  	ModLog("MCR Error: LuaCodeToTuple errors found.  No local storage save occcured.")
+  end -- if not err
+end -- ModConfig:SaveSettingsFile()
+
+
 ----------------------------------- ModConfig:Save -----------------------------------------------------
--- Save all of the current settings to disk.
+-- Save all of the current settings to mcr modpersistant data.
 -- ModConfig.data (self.data) is where all 'changed' or 'set' values reside
 function ModConfig:Save()
-    local mod_data = self.data or {}
-    local save_data = Compress(ValueToLuaCode(mod_data))
-    local interface = GetInGameInterface()
-    if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
-        ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
-    end
-    WriteModPersistentData(save_data)
+  local mod_data = self.data or {}
+  local save_data = Compress(ValueToLuaCode(mod_data))
+  local interface = GetInGameInterface()
+  if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
+      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
+  end -- if interface
+  WriteModPersistentData(save_data)
+  self:SaveSettingsFile()
 end -- ModConfig:Save
 
 
@@ -709,6 +748,7 @@ function ModConfig:AddOptionControl(parent, mod_id, option_id)
 end --ModConfig:AddOptionControl
 
 
+
 --------------------------------------------------------------------------------------------------------
 ----------------------------------- OnMsgs -------------------------------------------------------------
 function OnMsg.ClassesBuilt()
@@ -785,7 +825,8 @@ function OnMsg.ClassesGenerate()
   g_ModConfigLoaded = true -- Set/reset testing var here.
   ModLog("Mod Config Reborn Initialized")
   Msg("ModConfigReady")
-end -- OnMsg.Autorun
+end -- OnMsg.ClassesGenerate()
+
 
 function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value, token)
     if token ~= ModConfig.internal_token then
