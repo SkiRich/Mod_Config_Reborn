@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Nov 17th, 2018
+-- Updated Dec 3rd, 2018
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -15,6 +15,12 @@ local lf_print   = false  -- Setup debug printing in local file
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
 g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
+
+-- Initialize LocalStorage if not already present
+-- Used for writing to file
+if type(LocalStorage.ModPersistentData) ~= "table" then
+    LocalStorage.ModPersistentData = {}
+end -- if type
 
 
 --[[
@@ -33,17 +39,21 @@ g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGen
 
 
 --------------------- ModConfig:RegisterMod ----------------------------------------------------------
--- @param mod_id - The internal name of this mod
--- @param mod_name - The name of this mod as presented to the user. This may be a translatable tuple
---                   like T{12345, "Mod Name"}. If unset, defaults to mod_id.
--- @param mod_desc - The description for this mod as presented to the user.This may be a
---                   translatable tuple like T{12345, "Mod Description"}. If unset, defaults to an
---                   empty string.
-function ModConfig:RegisterMod(mod_id, mod_name, mod_desc)
+-- mod_id   : The internal name of this mod
+-- mod_name : The name of this mod as presented to the user. This may be a translatable tuple
+--            like T{12345, "Mod Name"}. If unset, defaults to mod_id.
+-- mod_desc : The description for this mod as presented to the user.This may be a
+--            translatable tuple like T{12345, "Mod Description"}. If unset, defaults to an
+--            empty string.
+-- save_loc : localstorage or centralstorage, where the MCR will store the options for the registered mod
+--            localstorage is file based and will be in LocaclStorage.lua file in the AppData/Surviving Mars directory
+--            centralstorage saves the registered mods options with MCR's data
+function ModConfig:RegisterMod(mod_id, mod_name, mod_desc, save_loc)
     mod_name = mod_name or mod_id
     mod_desc = mod_desc or ""
+    save_loc = save_loc or "centralstorage"
     if not self.registry then self.registry = {} end
-    self.registry[mod_id] = {name = mod_name, desc = mod_desc}
+    self.registry[mod_id] = {name = mod_name, desc = mod_desc, save = save_loc}
 end -- ModConfig:RegisterMod
 
 
@@ -250,41 +260,120 @@ function ModConfig:GetRegisteredOptions(mod_id)
 end -- ModConfig:GetRegisteredOptions
 
 
+----------------------------------- ModConfig:ReadSettingsFile() --------------------------------------
+-- read the localstorage settings file and merge data into mcr data
+function ModConfig:ReadSettingsFile()
+	local LocalStorage = LocalStorage
+	local mod_data = self.data or false
+	local local_save_data = false
+
+	if not mod_data then
+		ModLog("MCR Error: self.data is nil and shoulld not be.")
+		return
+	end -- if not mod_data
+
+	if LocalStorage.ModPersistentData["ModConfigReborn"] then
+		local_save_data = LocalStorage.ModPersistentData["ModConfigReborn"]
+	end -- if LocalStorage
+
+	if not local_save_data then
+		ModLog("MCR: No LocalStorage.ModPersistentData for MCR")
+		return
+	end -- if not local_save_data
+
+  for regMod, regModT in pairs(local_save_data) do
+  	self.data[regMod] = regModT
+  end -- for regMod
+
+end -- ModConfig:ReadSettingsFile()
+
+
 ----------------------------------- ModConfig:Load -----------------------------------------------------
--- Load previously saved settings from disk.
+-- Load previously saved settings
 -- ModConfig.data (self.data) is where all 'changed' or 'set' values reside
 function ModConfig:Load()
-    local err, file_content = ReadModPersistentData()
-    local data
-    if err then
-        self.data = {}
-    else
-        err, data = LuaCodeToTuple(Decompress(file_content))
-        if not err then self.data = data end
-    end
-    if not self.registry then self.registry = {} end
+  local err, file_content = ReadModPersistentData()
+  local data
+  if err then
+      self.data = {}
+  else
+      err, data = LuaCodeToTuple(Decompress(file_content))
+      if not err then self.data = data end
+  end
+  if not self.registry then self.registry = {} end
+  self:ReadSettingsFile()
 end -- ModConfig:Load
 
 ----------------------------------- ModConfig:CalcDataSpace -------------------------------------------
--- calculates the space used inside ModConfig.data
+-- calculates the space used inside ModConfig.data but only for centrally stored data
 function ModConfig:CalcDataSpace()
-    local mod_data  = self.data or {}
-    local save_data = Compress(ValueToLuaCode(mod_data))
-    local dataspace = 100* string.len(save_data) / const.MaxModDataSize
-    return dataspace
+	local mod_data = self.data or {}
+	local registry = self.registry or {}
+	local save_data = {}
+
+	for regMod, regModOpt in pairs(registry) do
+		if regModOpt.save and (regModOpt.save == "centralstorage") and mod_data[regMod] then
+			save_data[regMod] = mod_data[regMod]
+		end -- if mod_data
+	end -- for regMod
+
+  local central_save_data = Compress(ValueToLuaCode(save_data))
+  local dataspace = 100* string.len(central_save_data) / const.MaxModDataSize
+  return dataspace
 end -- ModConfig:CalcDataSpace()
 
+
+----------------------------------- ModConfig:SaveSettingsFile() --------------------------------------
+-- save the localstorage data to localstorage.lua settings file
+function ModConfig:SaveSettingsFile()
+	local LocalStorage = LocalStorage
+	local mod_data = self.data or {}
+	local save_data = {}
+	local registry = self.registry or {}
+
+	for regMod, regModOpt in pairs(registry) do
+		if regModOpt.save and (regModOpt.save == "localstorage") and mod_data[regMod] then
+			save_data[regMod] = mod_data[regMod]
+		end -- if mod_data
+	end -- for regMod
+
+  local lua_save_data = ValueToLuaCode(save_data)
+  local err, local_save_data = LuaCodeToTuple(lua_save_data)
+  if not err then
+  	LocalStorage.ModPersistentData["ModConfigReborn"] = local_save_data
+    local success = SaveLocalStorage()
+    if not success then
+    	print("ModConfig:SaveSettingsFile() SaveLocalStorage Errors occurred")
+    	ModLog("MCR Error: Could not save to local storage.")
+    end -- if not success
+  else
+  	print("ModConfig:SaveSettingsFile() LuaCodeToTuple Errors:", tostring(err))
+  	ModLog("MCR Error: LuaCodeToTuple errors found.  No local storage save occcured.")
+  end -- if not err
+end -- ModConfig:SaveSettingsFile()
+
+
 ----------------------------------- ModConfig:Save -----------------------------------------------------
--- Save all of the current settings to disk.
+-- Save all of the current settings to mcr modpersistant data.
 -- ModConfig.data (self.data) is where all 'changed' or 'set' values reside
 function ModConfig:Save()
-    local mod_data = self.data or {}
-    local save_data = Compress(ValueToLuaCode(mod_data))
-    local interface = GetInGameInterface()
-    if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
-        ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
-    end
-    WriteModPersistentData(save_data)
+  local mod_data = self.data or {}
+	local save_data = {}
+	local registry = self.registry or {}
+
+	for regMod, regModOpt in pairs(registry) do
+		if ((type(regModOpt.save) == nil) or (regModOpt.save == "centralstorage")) and mod_data[regMod] then
+			save_data[regMod] = mod_data[regMod]
+		end -- if mod_data
+	end -- for regMod
+
+  local central_save_data = Compress(ValueToLuaCode(save_data))
+  local interface = GetInGameInterface()
+  if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
+      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
+  end -- if interface
+  WriteModPersistentData(central_save_data)
+  self:SaveSettingsFile()
 end -- ModConfig:Save
 
 
@@ -709,6 +798,7 @@ function ModConfig:AddOptionControl(parent, mod_id, option_id)
 end --ModConfig:AddOptionControl
 
 
+
 --------------------------------------------------------------------------------------------------------
 ----------------------------------- OnMsgs -------------------------------------------------------------
 function OnMsg.ClassesBuilt()
@@ -785,7 +875,8 @@ function OnMsg.ClassesGenerate()
   g_ModConfigLoaded = true -- Set/reset testing var here.
   ModLog("Mod Config Reborn Initialized")
   Msg("ModConfigReady")
-end -- OnMsg.Autorun
+end -- OnMsg.ClassesGenerate()
+
 
 function OnMsg.ModConfigChanged(mod_id, option_id, value, old_value, token)
     if token ~= ModConfig.internal_token then

@@ -1,4 +1,33 @@
 # Mod Config Reborn Changelog
+## v2.4.0 12/03/2018 8:08:45 PM
+#### Changed
+- function ModConfig:RegisterMod
+  - included option for sav_loc
+- ModConfig:CalcDataSpace(mod_data)
+  - sending save_data from Save() function to caculate only the central storage
+- ModConfig:Save()
+  - now splits save to central or local storage
+- ModConfig:Load()
+  - now calls ReadSettingsFile() and consolidates the data in ModConfig.data
+- ModConfig:CalcDataSpace()
+  - takes into account local vs central storage and returns only space used by central storage.
+
+#### Added
+- Added functions to read and save to LocalStorage.lua
+- function ModConfig:ReadSettingsFile()
+- function ModConfig:SaveSettingsFile()
+
+#### Removed
+
+#### Fixed Issues
+
+#### Open Issues
+
+#### Deprecated
+
+#### Todo
+
+--------------------------------------------------------
 ## v2.3.1 12/02/2018 5:44:28 PM
 #### Added
 - Interface checks to safe space functions to prevent log spam on nil interface.
