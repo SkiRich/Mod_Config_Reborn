@@ -1,4 +1,9 @@
 # Mod Config Reborn Changelog
+## v2.4.1 12/03/2018 11:23:09 PM
+#### Changed
+- fixed syntax and documentation of comments
+
+--------------------------------------------------------
 ## v2.4.0 12/03/2018 8:08:45 PM
 #### Changed
 - function ModConfig:RegisterMod
@@ -16,16 +21,6 @@
 - Added functions to read and save to LocalStorage.lua
 - function ModConfig:ReadSettingsFile()
 - function ModConfig:SaveSettingsFile()
-
-#### Removed
-
-#### Fixed Issues
-
-#### Open Issues
-
-#### Deprecated
-
-#### Todo
 
 --------------------------------------------------------
 ## v2.3.1 12/02/2018 5:44:28 PM

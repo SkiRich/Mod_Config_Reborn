@@ -45,8 +45,8 @@ end -- if type
 -- mod_desc : The description for this mod as presented to the user.This may be a
 --            translatable tuple like T{12345, "Mod Description"}. If unset, defaults to an
 --            empty string.
--- save_loc : localstorage or centralstorage, where the MCR will store the options for the registered mod
---            localstorage is file based and will be in LocaclStorage.lua file in the AppData/Surviving Mars directory
+-- save_loc : string - "localstorage" or "centralstorage", where the MCR will store the options for the registered mod
+--            localstorage is file based and will be in LocalStorage.lua file in the AppData/Surviving Mars directory
 --            centralstorage saves the registered mods options with MCR's data
 function ModConfig:RegisterMod(mod_id, mod_name, mod_desc, save_loc)
     mod_name = mod_name or mod_id
