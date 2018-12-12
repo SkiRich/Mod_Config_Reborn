@@ -5,10 +5,10 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Dec 3rd, 2018
+-- Updated Dec 11th, 2018
 
 local lf_debug   = false  -- used only for certain ex() instance
-local lf_print   = false  -- Setup debug printing in local file
+local lf_print   = true  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
 
 
@@ -51,7 +51,8 @@ end -- if type
 function ModConfig:RegisterMod(mod_id, mod_name, mod_desc, save_loc)
     mod_name = mod_name or mod_id
     mod_desc = mod_desc or ""
-    save_loc = save_loc or "centralstorage"
+    save_loc = save_loc or "centralstorage" -- set default to central storage
+    if (save_loc ~= "centralstorage") and (save_loc ~= "localstorage") then save_loc = "centralstorage" end -- only allow these two settings
     if not self.registry then self.registry = {} end
     self.registry[mod_id] = {name = mod_name, desc = mod_desc, save = save_loc}
 end -- ModConfig:RegisterMod
@@ -195,20 +196,45 @@ function ModConfig:GetDefault(mod_id, option_id)
     return mod_options and mod_options[option_id] and mod_options[option_id].default
 end -- ModConfig:GetDefault
 
+-- reset all mod config options back to default
 ----------------------------------- ModConfig:ResetAllToDefault ----------------------------------------
 function ModConfig:ResetAllToDefaults()
-	local registry = self.registry
-	ModConfig.data = {} -- blank out the data
-	for mod_id in pairs(registry) do
-		for option_id in pairs(registry[mod_id].options) do
-			local defaultvalue = ModConfig:GetDefault(mod_id, option_id)
-			if type(defaultvalue) ~= "nil" then
-				if lf_print then print("Resetting: ", mod_id, " ", option_id, " to ", tostring(defaultvalue)) end
-				ModConfig:Set(mod_id, option_id, defaultvalue)
-			end
-		end -- option_id
-  end -- for mod_id
-  ModConfig:Save()
+	-- use thread to slow up process slightly in case of File I/O and process pre-emptions
+	CreateRealTimeThread(function(self)
+		local reset = true
+	  local registry = self.registry
+	  self.data = {} -- blank out the data
+	  for mod_id in pairs(registry) do
+	  	for option_id in pairs(registry[mod_id].options) do
+	  		local defaultvalue = self:GetDefault(mod_id, option_id)
+	  		local optiontype = registry[mod_id].options[option_id].type
+	  		if (type(defaultvalue) ~= "nil") then
+	  			-- if there is a default, then use that
+	  			-- type 'enum' will use default or if not defined, the first item in the enum table
+	  			if lf_print then print("Resetting Default: ", mod_id, " ", option_id, " to ", tostring(defaultvalue)) end
+	  			if not self.data[mod_id] then self.data[mod_id] = {} end
+	  			-- since the value is default, we dont need to add the option to the the data
+	  			self.data[mod_id][option_id] = nil
+	  			self:Save()
+	  			-- we still need to broadcast the options default value since things change based on value
+	  			Msg("ModConfigChanged", mod_id, option_id, defaultvalue, nil, "ModConfigReset")
+	  			Sleep(10)
+	  		elseif (type(defaultvalue) == "nil") and (optiontype ~= "note") then
+	  			-- if no default is set, use the current option (used for any missing defaults)
+	  			-- exclude 'note' type since thats not a settable option
+	  			local currentvalue = self:Get(mod_id, option_id)
+	  			if lf_print then print("Resetting NIL Default: ", mod_id, " ", option_id, " to ", tostring(currentvalue)) end
+	  			if not self.data[mod_id] then self.data[mod_id] = {} end
+	  			self.data[mod_id][option_id] = currentvalue
+	  			self:Save()
+	  			Msg("ModConfigChanged", mod_id, option_id, currentvalue, nil, "ModConfigReset")
+	  			Sleep(10)
+	  		end -- if defaultvalue
+	  	end -- for option_id
+    end -- for mod_id
+    ModLog("MCR - Reset Mod Config Data Complete")
+    self:OpenDialog()
+  end, self) -- CreateRealTimeThread
 end -- ModConfig:ResetAllToDefault()
 
 
@@ -318,8 +344,12 @@ function ModConfig:CalcDataSpace()
 	end -- for regMod
 
   local central_save_data = Compress(ValueToLuaCode(save_data))
-  local dataspace = 100* string.len(central_save_data) / const.MaxModDataSize
-  return dataspace
+  if lf_print then print("central_save_data len: ", string.len(central_save_data), " Max : ", const.MaxModDataSize) end
+
+  local overdatalimit = string.len(central_save_data) > const.MaxModDataSize
+  local dataspace = ((100 * string.len(central_save_data)) + 0.0) / const.MaxModDataSize
+  dataspace = string.format("%.2f", dataspace)
+  return dataspace, overdatalimit
 end -- ModConfig:CalcDataSpace()
 
 
@@ -362,7 +392,7 @@ function ModConfig:Save()
 	local registry = self.registry or {}
 
 	for regMod, regModOpt in pairs(registry) do
-		if ((type(regModOpt.save) == nil) or (regModOpt.save == "centralstorage")) and mod_data[regMod] then
+		if ((type(regModOpt.save) == "nil") or (regModOpt.save == "centralstorage")) and mod_data[regMod] then
 			save_data[regMod] = mod_data[regMod]
 		end -- if mod_data
 	end -- for regMod
