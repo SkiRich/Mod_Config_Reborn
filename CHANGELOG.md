@@ -1,4 +1,22 @@
 # Mod Config Reborn Changelog
+## v2.4.2 12/11/2018 5:05:37 PM
+#### Changed
+- ModConfig:Save()
+- ModConfig:RegisterMod()
+- ModConfig:ResetAllToDefaults() now emulates the Set() command but forces the set
+- ModConfig:Save() - added reset parm for passthrought to SaveSettingsFile()
+- ModConfig:SaveSettingsFile(0 - added reset param for special handling of defaults
+
+#### Added
+- parameter restrictions for sav_loc in RegisterMod()
+- token ModConfigReset send in Msg ModConfigChanged in ResetAllToDefaults()
+- check for persistent storage limit reached in ModConfig:CalcDataSpace()
+- ModConfigWarnOverLimit() - a check for persistent storage space prior to save.
+
+#### Fixed Issues
+- fixed check for nil in Save()
+
+--------------------------------------------------------
 ## v2.4.1 12/03/2018 11:23:09 PM
 #### Changed
 - fixed syntax and documentation of comments

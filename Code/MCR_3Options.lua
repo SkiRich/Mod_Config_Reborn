@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Oct 24th, 2018
+-- Updated Dec 11th, 2018
 
 function OnMsg.ModConfigReady()
     local StringIdBase = ModConfig.StringIdBase
@@ -18,7 +18,7 @@ function OnMsg.ModConfigReady()
 
     ModConfig:RegisterOption("_ModConfigReborn_", "ResetModConfigData", {
         name = T{StringIdBase + 2, "Reset All Mod Config Data:"},
-        desc = T{StringIdBase + 3, "Reset and default all Mod Config Data. All mods will be defaulted. Do this only if you suspect registry corruption in mod config or for a fresh start."},
+        desc = T{StringIdBase + 3, "Reset and default all Mod Config Data. All mods will be defaulted if defaults defined. Do this only if you suspect registry corruption in mod config or for a fresh start."},
         type = "boolean",
         default = false
     })
@@ -50,12 +50,8 @@ local function MCRConfirmChangePopup(changetype)
         if choice == 1 then
         	if changetype == "blank" then end
         	if changetype == "reset" then
+        		ModConfig.CloseDialog()
         		ModConfig:ResetAllToDefaults() -- reset all data
-        		CreateRealTimeThread(function()
-        			ModConfig.CloseDialog()
-        			Sleep(100) -- Short delay to let window close
-        			ModConfig.OpenDialog()
-        		end) -- end RealTimeThread
         	end -- reset
         elseif choice == 2 then
         	if changetype == "blank" then end
