@@ -1,8 +1,8 @@
 return PlaceObj('ModDef', {
 	'title', "Mod Config Reborn",
-	'description', "Mod Config Reborn\nv2.4.1\nOriginal Code by Waywocket\nRebuilt by SkiRich\nContributions by ChoGGi",
+	'description', "Mod Config Reborn\nv2.4.2\nOriginal Code by Waywocket\nRebuilt by SkiRich\nContributions by ChoGGi",
 	'image', "ModConfigRebornLogo.png",
-	'last_changes', "v2.4.1 Dec 10th, 2018\n- Build for Gagarin",
+	'last_changes', "v2.4.2 Dec 11th, 2018\n- Build for Gagarin",
 	'ignore_files', {
 		"*.git/*",
 		"*.svn/*",

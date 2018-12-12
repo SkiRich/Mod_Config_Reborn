@@ -9,17 +9,12 @@
 
 #### Added
 - parameter restrictions for sav_loc in RegisterMod()
-- token ModConfigReset to Msg in ResetAllToDefaults()
+- token ModConfigReset send in Msg ModConfigChanged in ResetAllToDefaults()
 - check for persistent storage limit reached in ModConfig:CalcDataSpace()
-#### Removed
+- ModConfigWarnOverLimit() - a check for persistent storage space prior to save.
 
 #### Fixed Issues
 - fixed check for nil in Save()
-#### Open Issues
-
-#### Deprecated
-
-#### Todo
 
 --------------------------------------------------------
 ## v2.4.1 12/03/2018 11:23:09 PM

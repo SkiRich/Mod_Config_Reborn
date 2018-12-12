@@ -8,9 +8,10 @@
 -- Updated Dec 11th, 2018
 
 local lf_debug   = false  -- used only for certain ex() instance
-local lf_print   = true  -- Setup debug printing in local file
+local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
 
+local ModConfigWarnThread = false -- var to keep track of warning thread
 
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
@@ -382,6 +383,28 @@ function ModConfig:SaveSettingsFile()
   end -- if not err
 end -- ModConfig:SaveSettingsFile()
 
+----------------------------------- ModConfigWarnOverLimit() ------------------------------------------
+function ModConfigWarnOverLimit()
+	if not IsValidThread(ModConfigWarnThread) then
+    ModConfigWarnThread = CreateRealTimeThread(function()
+        local params = {
+            title = T{"Mod Config Reborn Warning"},
+             text = T{"Maximum persistent storage limit has been reached. There are too many options in Mod Config and/or too many options have been changed.<newline>"..
+             	        "A corrupt Mod Config database can also cause this.<newline>"..
+             	        "You can try to reset Mod Config Reborn to fix the issue, or contact the authors of the mods that use Mod Config Reborn.<newline>"..
+             	        "Changes in Mod Config Reborn are not being saved"},
+            choice1 = T{"OK"},
+            image = "UI/Messages/death.tga",
+            start_minimized = false,
+        } -- params
+        local choice = WaitPopupNotification(false, params)
+        if choice == 1 then
+          --nothing
+        end -- if statement
+        Sleep(60 * 1000) -- run thread for 1 minute so we dont spam the user.
+    end ) -- CreateRealTimeThread
+  end -- if not IsValidThread
+end -- function end
 
 ----------------------------------- ModConfig:Save -----------------------------------------------------
 -- Save all of the current settings to mcr modpersistant data.
@@ -397,13 +420,19 @@ function ModConfig:Save()
 		end -- if mod_data
 	end -- for regMod
 
+  local dataspace, overdatalimit = self:CalcDataSpace()
   local central_save_data = Compress(ValueToLuaCode(save_data))
   local interface = GetInGameInterface()
   if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
-      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
+      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = dataspace })
   end -- if interface
-  WriteModPersistentData(central_save_data)
-  self:SaveSettingsFile()
+
+  -- check space in persistable memory and warn if over limit
+  if overdatalimit then ModConfigWarnOverLimit() end
+
+  -- only save data if datalimit is less then max
+  if not overdatalimit then WriteModPersistentData(central_save_data) end
+  self:SaveSettingsFile() -- we can always save to file
 end -- ModConfig:Save
 
 
