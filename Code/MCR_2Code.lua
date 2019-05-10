@@ -16,6 +16,7 @@ local ModConfigWarnThread = false -- var to keep track of warning thread
 ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
 g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
+g_ModConfigLoadedInitData = false -- test variable for initially loaded data
 
 -- Initialize LocalStorage if not already present
 -- Used for writing to file
@@ -322,10 +323,18 @@ function ModConfig:Load()
   local err, file_content = ReadModPersistentData()
   local data
   if err then
-      self.data = {}
+  	if lf_print then print("****** ModConfig Fatal Error reading mod peristant data ******") end
+  	ModLog("ERROR - ModConfig Fatal Error reading mod peristant data")
+    self.data = {}
   else
-      err, data = LuaCodeToTuple(Decompress(file_content))
-      if not err then self.data = data end
+    err, data = LuaCodeToTuple(Decompress(file_content))
+    if not err then
+    	self.data = data
+    	g_ModConfigLoadedInitData = table.copy(data, "deep")
+    else
+    	if lf_print then print("****** ModConfig Fatal Error decompresing peristant data ******") end
+  	  ModLog("ERROR - ModConfig Fatal Error decompressing mod peristant data")
+    end -- if not error
   end
   if not self.registry then self.registry = {} end
   self:ReadSettingsFile()
@@ -431,7 +440,10 @@ function ModConfig:Save()
   if overdatalimit then ModConfigWarnOverLimit() end
 
   -- only save data if datalimit is less then max
-  if not overdatalimit then WriteModPersistentData(central_save_data) end
+  if not overdatalimit then
+  	if lf_print then print("Successfully saved data in persistdata") end
+  	WriteModPersistentData(central_save_data)
+  end -- if not overdatalimit
   self:SaveSettingsFile() -- we can always save to file
 end -- ModConfig:Save
 

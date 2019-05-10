@@ -1,4 +1,13 @@
 # Mod Config Reborn Changelog
+## v2.4.3 05/09/2019 10:44:35 PM
+
+#### Added
+- Added g_ModConfigLoadedInitData
+  - a variable that contains a copy of the registry at the moment MCR loads and before any other mod makes changes
+  - used for debugging
+- Added additional prints and ModLog's to code when MCR fails during load - for debugging
+
+--------------------------------------------------------
 ## v2.4.2 12/11/2018 5:05:37 PM
 #### Changed
 - ModConfig:Save()
