@@ -1,4 +1,16 @@
 # Mod Config Reborn Changelog
+## v2.4.4 05/25/2019 4:40:29 AM
+
+#### Added
+- added OnMsg.SaveGame()
+- added OnMsg.LoadGame()
+
+#### Removed
+
+#### Fixed Issues
+- ReadModPersistentData() was clearing persistent data upon being issued causing write data not to be current, so if a user loaded a game and quit the data was reset on next load.
+
+--------------------------------------------------------
 ## v2.4.3 05/09/2019 10:44:35 PM
 
 #### Added
