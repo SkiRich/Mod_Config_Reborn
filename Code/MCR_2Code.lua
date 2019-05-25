@@ -337,7 +337,9 @@ function ModConfig:Load()
     end -- if not error
   end
   if not self.registry then self.registry = {} end
+
   self:ReadSettingsFile()
+
 end -- ModConfig:Load
 
 ----------------------------------- ModConfig:CalcDataSpace -------------------------------------------
@@ -872,6 +874,18 @@ end --ModConfig:AddOptionControl
 
 --------------------------------------------------------------------------------------------------------
 ----------------------------------- OnMsgs -------------------------------------------------------------
+function OnMsg.LoadGame()
+	ModConfig:Save()
+end -- OnMsg.LoadGame()
+
+
+function OnMsg.SaveGame()
+	ModConfig:Save()
+end -- OnMsg.SaveGame()
+
+
+
+
 function OnMsg.ClassesBuilt()
 	local XTemplates = XTemplates
   local ObjModified = ObjModified
