@@ -1,4 +1,13 @@
 # Mod Config Reborn Changelog
+## v2.4.5 06/01/2019 3:58:11 AM
+
+#### Added
+- OnMsg.CityStart
+
+#### Fixed Issues
+- ReadPersistentStorage was wiping the storage on citystart and exit.
+
+--------------------------------------------------------
 ## v2.4.4 05/25/2019 4:40:29 AM
 
 #### Added

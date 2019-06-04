@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated May 9th, 2019
+-- Updated June 1st, 2019
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -874,6 +874,12 @@ end --ModConfig:AddOptionControl
 
 --------------------------------------------------------------------------------------------------------
 ----------------------------------- OnMsgs -------------------------------------------------------------
+-- needed to add CityStart and LoadGame since readpersistentstorage is wiping after read
+function OnMsg.CityStart()
+	ModConfig:Save()
+end -- OnMsg.CityStart()
+
+
 function OnMsg.LoadGame()
 	ModConfig:Save()
 end -- OnMsg.LoadGame()
