@@ -1,4 +1,42 @@
 # Mod Config Reborn Changelog
+## v2.5.0 06/04/2019 1:01:53 AM
+#### Changed
+- function ModConfig:ReadSettingsFile(restore)
+  - changed the way it reads the file data, allows for two types of reads, restore and localstorage
+  - no longer walking registry
+  - removed convertion techniques, not needed here
+- function ModConfig:CalcDataSpace(compressData)
+  - no longer calculating compression by default
+  - no longer walking registry
+- function ModConfig:SaveSettingsFile(backup)
+  - changed the way it saves the file data, allows for two types of save, backup and localstorage
+  - no longer walking registry
+  - removed convertion techniques, not needed here
+- ModConfig:Save()
+  - no longer walking registry
+  - no longer compressing
+- ModConfig:Load()
+  - no longer walking registry
+  - no longer decompressing
+
+#### Added
+- Additional ModLog messages
+
+#### Removed
+- Removed initialize LocalStorage, moved to read and save file functions.
+- no longer compressing data
+- removed OnMsg.CityStart() , LoadGame(), and CityStart() - didnt need them.
+
+#### Fixed Issues
+- registry walking in the load and save functions was flawed after the game converted to
+using double load of mods (ReloadLua()), once during game load on the start screen and again on game load/new.
+The result was an incomplete registry since not all mods loaded yet but some mods would do a ModConfig:Set().
+Walking the registry early caused some mod data to be wiped clean on every game load or new game.
+
+#### Todo
+- Add a compress technique and modconfig optoin to use if data size creep gets too large.
+
+--------------------------------------------------------
 ## v2.4.5 06/01/2019 3:58:11 AM
 
 #### Added
