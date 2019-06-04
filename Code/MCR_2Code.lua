@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated June 1st, 2019
+-- Updated June 3rd, 2019
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -17,13 +17,7 @@ ModConfig = {}    -- base class for modconfig
 ModConfig.StringIdBase = 76827146
 g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
 g_ModConfigLoadedInitData = false -- test variable for initially loaded data
-
--- Initialize LocalStorage if not already present
--- Used for writing to file
-if type(LocalStorage.ModPersistentData) ~= "table" then
-    LocalStorage.ModPersistentData = {}
-end -- if type
-
+g_ModConfigLoadedRegistry = false -- test variable for initially loaded registry
 
 --[[
     Handling messages sent by this mod:
@@ -292,25 +286,53 @@ end -- ModConfig:GetRegisteredOptions
 -- read the localstorage settings file and merge data into mcr data
 function ModConfig:ReadSettingsFile()
 	local LocalStorage = LocalStorage
-	local mod_data = self.data or false
-	local local_save_data = false
+	local localstorage_save_data = {}
+	local mod_data = {}
 
-	if not mod_data then
-		ModLog("MCR Error: self.data is nil and shoulld not be.")
+  -- Short curcuit, there is an error that should not happen
+	if not self.data then
+		ModLog("MCR Error: self.data is nil and shoulld not be.  MCR did not load data.")
 		return
-	end -- if not mod_data
+	end -- if not self.data
 
-	if LocalStorage.ModPersistentData["ModConfigReborn"] then
-		local_save_data = LocalStorage.ModPersistentData["ModConfigReborn"]
-	end -- if LocalStorage
-
-	if not local_save_data then
-		ModLog("MCR: No LocalStorage.ModPersistentData for MCR")
+	if not LocalStorage then
+		ModLog("MCR Error: On Read - LocalStorage is nil.")
 		return
-	end -- if not local_save_data
+	end -- if not LocalStorage
 
-  for regMod, regModT in pairs(local_save_data) do
-  	self.data[regMod] = regModT
+  if LocalStorage and not LocalStorage.ModConfigRebornDataBackup then
+  	LocalStorage.ModConfigRebornDataBackup = {}
+  	ModLog("MCR : On Read LS ModConfigRebornDataBackup is nil - creating table.")
+  end -- if LocalStorage and not LocalStorage.ModConfigRebornDataBackup
+
+  if LocalStorage and not LocalStorage.ModPersistentData then
+  	LocalStorage.ModPersistentData = {}
+  	ModLog("MCR : On Read LS ModPersistentData is nil - creating table.")
+  end -- if LocalStorage and not LocalStorage.ModPersistentData
+
+  if LocalStorage and not LocalStorage.ModPersistentData.ModConfigReborn then
+  	LocalStorage.ModPersistentData.ModConfigReborn = {}
+  	ModLog("MCR : On Read LS ModConfigReborn is nil - creating table.")
+  end -- if LocalStorage and not LocalStorage.ModConfigReborn
+
+  -- read the stored data
+  localstorage_save_data = table.copy(LocalStorage.ModPersistentData.ModConfigReborn, "deep") or {}
+  mod_data = table.copy(LocalStorage.ModConfigRebornDataBackup, "deep") or {}
+
+  -- restore the data
+	-- just compare and check for missing params in self.data
+  for regMod, regModT in pairs(mod_data) do
+    if not self.data[regMod] then
+ 	  	self.data[regMod] =  regModT
+ 	  	ModLog(string.format("MCR restoring missing regMod: %s", regMod))
+ 	  end -- if not self
+  end -- for regMod
+
+  -- restore the localstorage variables and overwrite original vars
+  ModLog("MCR localstorage read running")
+ 	-- do this if mod flag is localstorage
+  for regMod, regModT in pairs(localstorage_save_data) do
+   	self.data[regMod] = regModT
   end -- for regMod
 
 end -- ModConfig:ReadSettingsFile()
@@ -324,74 +346,99 @@ function ModConfig:Load()
   local data
   if err then
   	if lf_print then print("****** ModConfig Fatal Error reading mod peristant data ******") end
-  	ModLog("ERROR - ModConfig Fatal Error reading mod peristant data")
+  	ModLog("MCR ERROR - ModConfig Fatal Error reading mod peristant data")
     self.data = {}
   else
-    err, data = LuaCodeToTuple(Decompress(file_content))
+    --err, data = LuaCodeToTuple(Decompress(file_content)) -- we dont do this anymore 6/3/2019
+    err, data = LuaCodeToTuple(file_content)
     if not err then
     	self.data = data
     	g_ModConfigLoadedInitData = table.copy(data, "deep")
     else
     	if lf_print then print("****** ModConfig Fatal Error decompresing peristant data ******") end
-  	  ModLog("ERROR - ModConfig Fatal Error decompressing mod peristant data")
+  	  ModLog("MCR ERROR - ModConfig Fatal Error decompressing mod peristant data - Wiping data")
+  	  self.data = {}
     end -- if not error
   end
+
   if not self.registry then self.registry = {} end
 
-  self:ReadSettingsFile()
+  self:ReadSettingsFile() -- load up the localstorage
 
 end -- ModConfig:Load
 
 ----------------------------------- ModConfig:CalcDataSpace -------------------------------------------
 -- calculates the space used inside ModConfig.data but only for centrally stored data
-function ModConfig:CalcDataSpace()
-	local mod_data = self.data or {}
+function ModConfig:CalcDataSpace(compressData)
+	local mod_data = table.copy(self.data, "deep") or {}
 	local registry = self.registry or {}
 	local save_data = {}
+	local central_save_data = false
 
-	for regMod, regModOpt in pairs(registry) do
-		if regModOpt.save and (regModOpt.save == "centralstorage") and mod_data[regMod] then
-			save_data[regMod] = mod_data[regMod]
-		end -- if mod_data
-	end -- for regMod
+  if compressData then
+    central_save_data = Compress(ValueToLuaCode(save_data))
+  else
+    central_save_data = ValueToLuaCode(save_data)
+  end -- if compressData
 
-  local central_save_data = Compress(ValueToLuaCode(save_data))
   if lf_print then print("central_save_data len: ", string.len(central_save_data), " Max : ", const.MaxModDataSize) end
 
   local overdatalimit = string.len(central_save_data) > const.MaxModDataSize
   local dataspace = ((100 * string.len(central_save_data)) + 0.0) / const.MaxModDataSize
   dataspace = string.format("%.2f", dataspace)
+
   return dataspace, overdatalimit
 end -- ModConfig:CalcDataSpace()
+
 
 
 ----------------------------------- ModConfig:SaveSettingsFile() --------------------------------------
 -- save the localstorage data to localstorage.lua settings file
 function ModConfig:SaveSettingsFile()
+	ModLog("MCR Saved Data")
 	local LocalStorage = LocalStorage
-	local mod_data = self.data or {}
-	local save_data = {}
-	local registry = self.registry or {}
+	local localstorage_save_data = {}
+	local mod_data  = table.copy(self.data, "deep") or {}
+	local registry  = table.copy(self.registry, "deep") or {}
 
+  if not g_ModConfigLoadedRegistry then g_ModConfigLoadedRegistry = table.copy(self.registry, "deep") end
+
+  -- setup the localstorage data
 	for regMod, regModOpt in pairs(registry) do
 		if regModOpt.save and (regModOpt.save == "localstorage") and mod_data[regMod] then
-			save_data[regMod] = mod_data[regMod]
+			localstorage_save_data[regMod] = mod_data[regMod]
 		end -- if mod_data
 	end -- for regMod
 
-  local lua_save_data = ValueToLuaCode(save_data)
-  local err, local_save_data = LuaCodeToTuple(lua_save_data)
-  if not err then
-  	LocalStorage.ModPersistentData["ModConfigReborn"] = local_save_data
-    local success = SaveLocalStorage()
-    if not success then
-    	print("ModConfig:SaveSettingsFile() SaveLocalStorage Errors occurred")
-    	ModLog("MCR Error: Could not save to local storage.")
-    end -- if not success
-  else
-  	print("ModConfig:SaveSettingsFile() LuaCodeToTuple Errors:", tostring(err))
-  	ModLog("MCR Error: LuaCodeToTuple errors found.  No local storage save occcured.")
-  end -- if not err
+	if not LocalStorage then
+		ModLog("MCR Error: On Save - LocalStorage is nil.")
+		return
+	end -- if not LocalStorage
+
+  if LocalStorage and not LocalStorage.ModConfigRebornDataBackup then
+  	LocalStorage.ModConfigRebornDataBackup = {}
+  	ModLog("MCR : On Save LS ModConfigRebornDataBackup is nil - creating table.")
+  end -- if LocalStorage and not LocalStorage.ModConfigRebornDataBackup
+
+  if LocalStorage and not LocalStorage.ModPersistentData then
+  	LocalStorage.ModPersistentData = {}
+  	ModLog("MCR : On Save LS ModPersistentData is nil - creating table.")
+  end -- if LocalStorage and not LocalStorage.ModPersistentData
+
+  if LocalStorage and not LocalStorage.ModPersistentData.ModConfigReborn then
+  	LocalStorage.ModPersistentData.ModConfigReborn = {}
+  	ModLog("MCR : On Save LS ModConfigReborn is nil - creating table.")
+  end -- if LocalStorage and not LocalStorage.ModConfigReborn
+
+  -- save the data to file
+  LocalStorage.ModConfigRebornDataBackup = mod_data
+  LocalStorage.ModPersistentData.ModConfigReborn = localstorage_save_data
+  local success, err = SaveLocalStorage()
+  if not success then
+    print("ModConfig:SaveSettingsFile() SaveLocalStorage Errors occurred")
+    ModLog(string.format("MCR Error: Could not save to local storage. Error: %s", err))
+  end -- if not success
+
 end -- ModConfig:SaveSettingsFile()
 
 ----------------------------------- ModConfigWarnOverLimit() ------------------------------------------
@@ -403,7 +450,7 @@ function ModConfigWarnOverLimit()
              text = T{"Maximum persistent storage limit has been reached. There are too many options in Mod Config and/or too many options have been changed.<newline>"..
              	        "A corrupt Mod Config database can also cause this.<newline>"..
              	        "You can try to reset Mod Config Reborn to fix the issue, or contact the authors of the mods that use Mod Config Reborn.<newline>"..
-             	        "Changes in Mod Config Reborn are not being saved"},
+             	        "Changes in Mod Config Reborn are not being entrally saved."},
             choice1 = T{"OK"},
             image = "UI/Messages/death.tga",
             start_minimized = false,
@@ -421,32 +468,33 @@ end -- function end
 -- Save all of the current settings to mcr modpersistant data.
 -- ModConfig.data (self.data) is where all 'changed' or 'set' values reside
 function ModConfig:Save()
-  local mod_data = self.data or {}
+  local mod_data = table.copy(self.data, "deep") or {}
 	local save_data = {}
-	local registry = self.registry or {}
+	local registry = table.copy(self.registry, "deep") or {}
 
-	for regMod, regModOpt in pairs(registry) do
-		if ((type(regModOpt.save) == "nil") or (regModOpt.save == "centralstorage")) and mod_data[regMod] then
-			save_data[regMod] = mod_data[regMod]
-		end -- if mod_data
-	end -- for regMod
+  local dataspace, overdatalimit = self:CalcDataSpace(false) -- check space being used
+  local central_save_data = ValueToLuaCode(mod_data)  -- convert to string text
 
-  local dataspace, overdatalimit = self:CalcDataSpace()
-  local central_save_data = Compress(ValueToLuaCode(save_data))
   local interface = GetInGameInterface()
   if interface and interface.idModConfigDlg  and interface.idModConfigDlg:IsVisible() then
       ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = dataspace })
   end -- if interface
 
-  -- check space in persistable memory and warn if over limit
-  if overdatalimit then ModConfigWarnOverLimit() end
-
+  -- check space in persistable memory and warn if over limit, do not attempt to save centrally
   -- only save data if datalimit is less then max
-  if not overdatalimit then
-  	if lf_print then print("Successfully saved data in persistdata") end
-  	WriteModPersistentData(central_save_data)
-  end -- if not overdatalimit
-  self:SaveSettingsFile() -- we can always save to file
+  if overdatalimit then
+  	ModConfigWarnOverLimit()
+  	WriteModPersistentData(ValueToLuaCode(empty_table)) -- blank out central data so restore added everything back
+  else
+  	if lf_print then print("Writing data to persistdata") end
+  	local err = WriteModPersistentData(central_save_data)
+    if err then
+      print("ModConfig:Save() WriteModPersistentData Errors occurred")
+      ModLog(string.format("MCR Error: Could not save to central storage. Error: %s", err))
+    end -- if not success
+  end -- if overdatalimit
+
+  self:SaveSettingsFile() -- save to local file as well
 end -- ModConfig:Save
 
 
@@ -599,7 +647,7 @@ function ModConfig:CreateModConfigDialog()
       }, content)
       content.idMCRintroText1:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
       content.id_space_label:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
-      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace() })
+      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace(false) })
     end
 
     -- Add all the options to the idModContentsList container
@@ -874,22 +922,6 @@ end --ModConfig:AddOptionControl
 
 --------------------------------------------------------------------------------------------------------
 ----------------------------------- OnMsgs -------------------------------------------------------------
--- needed to add CityStart and LoadGame since readpersistentstorage is wiping after read
-function OnMsg.CityStart()
-	ModConfig:Save()
-end -- OnMsg.CityStart()
-
-
-function OnMsg.LoadGame()
-	ModConfig:Save()
-end -- OnMsg.LoadGame()
-
-
-function OnMsg.SaveGame()
-	ModConfig:Save()
-end -- OnMsg.SaveGame()
-
-
 
 
 function OnMsg.ClassesBuilt()
