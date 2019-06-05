@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated June 3rd, 2019
+-- Updated June 4th, 2019
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -364,27 +364,25 @@ function ModConfig:Load()
   if not self.registry then self.registry = {} end
 
   self:ReadSettingsFile() -- load up the localstorage
-
 end -- ModConfig:Load
 
+
 ----------------------------------- ModConfig:CalcDataSpace -------------------------------------------
--- calculates the space used inside ModConfig.data but only for centrally stored data
+-- calculates the space used inside ModConfig.data but only for stored data
 function ModConfig:CalcDataSpace(compressData)
 	local mod_data = table.copy(self.data, "deep") or {}
-	local registry = self.registry or {}
-	local save_data = {}
-	local central_save_data = false
+	local save_data = false
 
   if compressData then
-    central_save_data = Compress(ValueToLuaCode(save_data))
+    save_data = Compress(ValueToLuaCode(mod_data))
   else
-    central_save_data = ValueToLuaCode(save_data)
+    save_data = ValueToLuaCode(mod_data)
   end -- if compressData
 
-  if lf_print then print("central_save_data len: ", string.len(central_save_data), " Max : ", const.MaxModDataSize) end
+  if lf_print then print("save_data len: ", string.len(save_data), " Max : ", const.MaxModDataSize) end
 
-  local overdatalimit = string.len(central_save_data) > const.MaxModDataSize
-  local dataspace = ((100 * string.len(central_save_data)) + 0.0) / const.MaxModDataSize
+  local overdatalimit = string.len(save_data) > const.MaxModDataSize
+  local dataspace = ((100 * string.len(save_data)) + 0.0) / const.MaxModDataSize
   dataspace = string.format("%.2f", dataspace)
 
   return dataspace, overdatalimit
