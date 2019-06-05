@@ -1,4 +1,12 @@
 # Mod Config Reborn Changelog
+## v2.5.1 06/04/2019 9:29:07 PM
+#### Changed
+- ModConfig:CalcDataSpace()
+
+#### Fixed Issues
+- CalcDataSpace() was calculating incorrect srting length size
+
+--------------------------------------------------------
 ## v2.5.0 06/04/2019 1:01:53 AM
 #### Changed
 - function ModConfig:ReadSettingsFile(restore)
