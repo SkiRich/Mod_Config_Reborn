@@ -357,7 +357,9 @@ function ModConfig:Load()
     else
     	if lf_print then print("****** ModConfig Fatal Error decompresing peristant data ******") end
   	  ModLog("MCR ERROR - ModConfig Fatal Error decompressing mod peristant data - Wiping data")
+  	  ModLog(string.format("MCR ERROR - Error Msg: %s", err))
   	  self.data = {}
+  	  WriteModPersistentData(ValueToLuaCode(empty_table)) -- blank out central data so the error doesnt happen on next load
     end -- if not error
   end
 
@@ -506,9 +508,14 @@ function ModConfig:IsReady()
 end -- ModConfig:IsReady
 
 ----------------------------------- ModConfig.CloseDialog ----------------------------------------------
-function ModConfig.CloseDialog()
-    GetInGameInterface().idModConfigDlg:delete()
-    ModConfig.elements = {}
+function ModConfig.CloseDialog(dlg)
+	if not dlg then
+		dlg = GetInGameInterface().idModConfigDlg
+	end -- if not dlg
+	if dlg then
+		dlg:Close()
+	end -- if dlg
+  ModConfig.elements = {}
 end -- ModConfig.CloseDialog
 
 ----------------------------------- ModConfig.OpenDialog -----------------------------------------------
@@ -597,7 +604,7 @@ function ModConfig:CreateModConfigDialog()
         TextStyle = "HUDStat",
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
-    }, title):SetText(T{ModConfig.StringIdBase, "Mod Config Reborn Mod Options"})
+    }, title):SetText(T{self.StringIdBase, "Mod Config Reborn Mod Options"})
 
     -- Create a container to house a scrollable area (in case the options don't all fit on one
     -- screen) and its associated scrollbar. These two elements need to be siblings to work
@@ -631,9 +638,9 @@ function ModConfig:CreateModConfigDialog()
           TextStyle = "InfoText",
           RolloverTextColor = RGB(233, 242, 255),
           Translate = true
-      }, content):SetText(T{ModConfig.StringIdBase + 1,
+      }, content):SetText(T{self.StringIdBase + 1,
               "Mouse over options to see a description of what they mean."})
-      ModConfig.space_label = XText:new({
+      self.space_label = XText:new({
       	  Id = "id_space_label",
           Padding = box(5, 2, 5, 2),
           VAlign = "center",
@@ -645,7 +652,7 @@ function ModConfig:CreateModConfigDialog()
       }, content)
       content.idMCRintroText1:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
       content.id_space_label:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
-      ModConfig.space_label:SetText(T{ModConfig.StringIdBase + 7, "Storage space in use: <used>%", used = ModConfig:CalcDataSpace(false) })
+      self.space_label:SetText(T{self.StringIdBase + 7, "Storage space in use: <used>%", used = self:CalcDataSpace(false) })
     end
 
     -- Add all the options to the idModContentsList container
@@ -683,26 +690,17 @@ function ModConfig:CreateModConfigDialog()
         HandleMouse = true,
         FXMouseIn = "PopupChoiceHover",
         FXPress = "PopupChoiceClick",
-        OnSetRollover = function(self, rollover)
-            CreateRealTimeThread(function()
-                if self.window_state ~= "destroying" then
-                    self.rollover = rollover
-                    self.idCloseButtonIcon:SetRollover(rollover)
-                    self.idRollover2:SetVisible(rollover)
-                    local b = self.idRollover2.box
-                    self.idRollover2:AddInterpolation({
-                        type = const.intRect,
-                        duration = self.idRollover2:GetFadeInTime(),
-                        startRect = b,
-                        endRect = sizebox(b:minx(), b:miny(), 40, b:sizey()),
-                        flags = const.intfInverse,
-                        autoremove = true
-                    })
-                end
-            end)
+
+        RolloverTitle = T(1011--[[Close]]),
+        RolloverText = "cya",
+        RolloverHint = T(608042494285--[[<left_click> Activate]]),
+
+        OnPress = function()
+        	self.CloseDialog(dlg)
         end,
     }, dlg)
-    close_button.OnPress = ModConfig.CloseDialog
+
+
     XImage:new({
         Id = "idRollover2",
         ZOrder = 0,
@@ -930,14 +928,7 @@ function OnMsg.ClassesBuilt()
   local MCRObjVer  = "v1.0"
   local XT = XTemplates.XIGMenu
   local idMenuList = XT[1][3][1] or empty_table
-  local idx = 1 -- default to 1 just in case we cant find the index
-
-
-  -- function re-write to hook into menu button
-  local Old_HUD_idMenuOnPress = HUD.idMenuOnPress
-  function HUD.idMenuOnPress()
-    OpenIngameMainMenu()
-  end -- HUD.idMenuOnPress
+  local idx = table.find(idMenuList,"ActionId","idOptions") or 1
 
   -- find idOptions in the XIGMenu template
   -- Gagarin uses ActionId now for some things
@@ -951,7 +942,7 @@ function OnMsg.ClassesBuilt()
   --retrofix versioning and remove legacyXtemplate if found
   if XT.MCR then
   	if lf_print then print("Retro fitting MCR in XIGMenu") end
-  	for i, obj in pairs(idMenuList) do
+  	for i, obj in pairs(idMenuList or empty_table) do
   		if (type(obj) == "table" and (obj.UniqueID == MCRMenuID01) and (obj.Version ~= MCRObjVer)) or
   		   (type(obj) == "table" and (obj.Id == "idActionOpenModConfig") and (not obj.UniqueID)) then
   			table.remove(idMenuList, i)

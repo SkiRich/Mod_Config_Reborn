@@ -1,4 +1,22 @@
 # Mod Config Reborn Changelog
+## v2.5.2 06/05/2019 7:58:40 PM
+#### Changed
+- ModConfig:Load()
+  - now added err to ModLog
+  - Does an immediate write to blank out the persistent data in account.dat
+- ModConfig.CloseDialog(dlg)
+  - using Close() instead of delete()
+- changed various ModConfig.something to self.something
+- minor changes to retrofit routine and using table.find
+
+#### Removed
+- OnSetRollover = function from local close_button
+- close_button.OnPress = ModConfig.CloseDialog
+
+#### Fixed Issues
+- Interpolation issues generated when closing the modconfig dialog
+
+--------------------------------------------------------
 ## v2.5.1 06/04/2019 9:29:07 PM
 #### Changed
 - ModConfig:CalcDataSpace()
