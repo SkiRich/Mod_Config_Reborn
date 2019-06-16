@@ -5,11 +5,18 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated May 9th, 2019
+-- Updated June 16th, 2019
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
+
+ModConfig = {}    -- base class for modconfig
+ModConfig.StringIdBase = 17764703500 -- Mod Config Reborn    : 703500 - 703599
+g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
+g_ModConfigLoadedInitData = false -- test variable for initially loaded data
+g_ModConfigLoadedRegistry = false -- test variable for initially loaded registry
+
 
 ----------------------------------------------------------------------------------------------------------
 
@@ -26,8 +33,8 @@ DefineClass.XModConfigToggleButton = {
     Dock = "right",
     HAlign = "right",
     VAlign = "center",
-    TextFont = "InfoText",
-    TextStyle = "InfoText",
+    TextFont = "OnScreenHintText",
+    TextStyle = "OnScreenHintText",
     Background = RGBA(0, 0, 0, 0),
     RolloverBackground = RGBA(0, 0, 0, 0),
     PressedBackground = RGBA(0, 0, 0, 0),
@@ -118,8 +125,8 @@ DefineClass.XModConfigNumberInput = {
     },
     HAlign = "right",
     LayoutMethod = "HList",
-    TextFont = "InfoText",
-    TextStyle = "InfoText",
+    TextFont = "OnScreenHintText",
+    TextStyle = "OnScreenHintText",
 }
 
 function XModConfigNumberInput:Init()
@@ -127,8 +134,8 @@ function XModConfigNumberInput:Init()
         Id = "idRemove",
         HAlign = "left",
         VAlign = "center",
-        TextFont = "InfoText",
-        TextStyle = "InfoText",
+        TextFont = "OnScreenHintText",
+        TextStyle = "OnScreenHintText",
         MouseCursor = "UI/Cursors/Rollover.tga",
         FXMouseIn = "RocketRemoveCargoHover",
         RepeatStart = 300,
@@ -155,8 +162,8 @@ function XModConfigNumberInput:Init()
         Id = "idAdd",
         HAlign = "right",
         VAlign = "center",
-        TextFont = "InfoText",
-        TextStyle = "InfoText",
+        TextFont = "OnScreenHintText",
+        TextStyle = "OnScreenHintText",
         MouseCursor = "UI/Cursors/Rollover.tga",
         FXMouseIn = "RocketRemoveCargoHover",
         RepeatStart = 300,
@@ -301,8 +308,8 @@ function XModConfigSlider:Init()
         SqueezeY = false,
     }, self.slider)
     self.idLabel = XText:new({
-    	  TextFont = "InfoText",
-        TextStyle = "InfoText",
+    	  TextFont = "OnScreenHintText",
+        TextStyle = "OnScreenHintText",
         Translate = true,
         Margins = box(10, 0, 10, 0),
         Dock = "right",

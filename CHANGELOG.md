@@ -1,4 +1,14 @@
 # Mod Config Reborn Changelog
+## 2.5.3 06/16/2019 2:19:10 AM
+#### Changed
+- All font styles updated to use current text styles
+- changed StringIDBase to my range
+- moved starting global vars to MCR_1Classes file
+
+#### Fixed Issues
+- font used did not paint russian cirillic characters
+
+--------------------------------------------------------
 ## v2.5.2 06/05/2019 7:58:40 PM
 #### Changed
 - ModConfig:Load()

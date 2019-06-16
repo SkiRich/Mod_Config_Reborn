@@ -5,7 +5,7 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated June 4th, 2019
+-- Updated June 16th, 2019
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
@@ -13,11 +13,6 @@ local lf_print   = false  -- Setup debug printing in local file
 
 local ModConfigWarnThread = false -- var to keep track of warning thread
 
-ModConfig = {}    -- base class for modconfig
-ModConfig.StringIdBase = 76827146
-g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
-g_ModConfigLoadedInitData = false -- test variable for initially loaded data
-g_ModConfigLoadedRegistry = false -- test variable for initially loaded registry
 
 --[[
     Handling messages sent by this mod:
@@ -600,8 +595,8 @@ function ModConfig:CreateModConfigDialog()
         HAlign = "stretch",
         VAlign = "center",
         TextHAlign = "center",
-        TextFont = "HUDStat",
-        TextStyle = "HUDStat",
+        TextFont = "PGNews",
+        TextStyle = "PGNews",
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
     }, title):SetText(T{self.StringIdBase, "Mod Config Reborn Mod Options"})
@@ -634,8 +629,8 @@ function ModConfig:CreateModConfigDialog()
           Padding = box(5, 2, 5, 2),
           VAlign = "center",
           TextAlign = "center",
-          TextFont = "InfoText",
-          TextStyle = "InfoText",
+          TextFont = "OnScreenHintText",
+          TextStyle = "OnScreenHintText",
           RolloverTextColor = RGB(233, 242, 255),
           Translate = true
       }, content):SetText(T{self.StringIdBase + 1,
@@ -645,8 +640,8 @@ function ModConfig:CreateModConfigDialog()
           Padding = box(5, 2, 5, 2),
           VAlign = "center",
           TextAlign = "center",
-          TextFont = "InfoText",
-          TextStyle = "InfoText",
+          TextFont = "OnScreenHintText",
+          TextStyle = "OnScreenHintText",
           RolloverTextColor = RGB(233, 242, 255),
           Translate = true
       }, content)
@@ -735,8 +730,8 @@ function ModConfig:CreateModConfigDialog()
         Padding = box(10, 0, 2, 0),
         HAlign = "left",
         VAlign = "center",
-        TextFont = "HUDStat",
-        TextStyle = "HUDStat",
+        TextFont = "PGNews",
+        TextStyle = "PGNews",
         RolloverTextColor = RGB(255, 255, 255),
         Translate = true,
     }, close_button):SetText(T{1011, "Close"})
@@ -755,8 +750,8 @@ function ModConfig:AddAllModSettingsToDialog(parent)
             Margins = box(0, 0, 0, 0),
             Padding = box(8, 2, 2, 8),
             HAlign = "center",
-            TextFont = "InfoText",
-            TextStyle = "InfoText",
+            TextFont = "OnScreenHintText",
+            TextStyle = "OnScreenHintText",
             RolloverTextColor = RGB(255, 255, 255),
             Background = RGBA(0, 0, 0, 0),
             Translate = true
@@ -793,8 +788,8 @@ function ModConfig:AddModSettingsToDialog(parent, mod_id, mod_registry)
         Padding = box(2, 8, 2, 8),
         VAlign = "center",
         TextHAlign = "center",
-        TextFont = "HUDStat",
-        TextStyle = "HUDStat",
+        TextFont = "PGNews",
+        TextStyle = "PGNews",
         RolloverTextColor = RGB(244, 228, 117),
         Translate = true
     }, section_header):SetText(mod_name)
@@ -822,15 +817,17 @@ function ModConfig:AddModSettingsToDialog(parent, mod_id, mod_registry)
             LayoutMethod = "Grid",
             Margins = box(2, 2, 2, 2),
             Background = RGBA(0, 0, 0, 0),
-            TextFont = "InfoText",
-            TextStyle = "InfoText",
+            TextFont = "OnScreenHintText",
+            TextStyle = "OnScreenHintText",
             TextHAlign = "left",
             RolloverTemplate = "Rollover",
             RolloverAnchor = "bottom",
         }, parent)
         if option_params.desc and option_params.desc ~= "" then
-            option_section:SetRolloverTitle(T{option_params.name, UICity})
-            option_section:SetRolloverText(T{option_params.desc, UICity})
+            --option_section:SetRolloverTitle(T{option_params.name, UICity})
+            --option_section:SetRolloverText(T{option_params.desc, UICity})
+            option_section:SetRolloverTitle(option_params.name)
+            option_section:SetRolloverText(option_params.desc)
         end
 
          XText:new({
@@ -838,11 +835,11 @@ function ModConfig:AddModSettingsToDialog(parent, mod_id, mod_registry)
             Margins = box(0, 0, 0, 0),
             Padding = box(8, 2, 2, 2),
             VAlign = "center",
-            TextFont = "InfoText",
-            TextStyle = "InfoText",
+            TextFont = "OnScreenHintText",
+            TextStyle = "OnScreenHintText",
             TextHAlign = "left",
             Background = RGBA(0, 0, 0, 0),
-            Translate = true
+            --Translate = true
         }, option_section):SetText(option_params.name)
         ModConfig:AddOptionControl(option_section, mod_id, option_id)
         option_section.idLabel:SetRolloverTextColor(RGB(255, 215, 0)) -- RolloverTextColor is Gold
