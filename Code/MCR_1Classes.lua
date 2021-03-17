@@ -5,14 +5,14 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated June 16th, 2019
+-- Updated March 16th, 2021
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
 
 ModConfig = {}    -- base class for modconfig
-ModConfig.StringIdBase = 17764703500 -- Mod Config Reborn    : 703500 - 703599
+ModConfig.StringIdBase = 17764703500 -- Mod Config Reborn    : 703500 - 703599; This file 0-20
 g_ModConfigLoaded = false -- set detection mechanism var. Set true in ClassesGenerate()
 g_ModConfigLoadedInitData = false -- test variable for initially loaded data
 g_ModConfigLoadedRegistry = false -- test variable for initially loaded registry

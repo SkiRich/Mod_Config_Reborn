@@ -1,4 +1,9 @@
 # Mod Config Reborn Changelog
+## 2.5.4 03/16/2021 8:11:58 PM
+#### Changed
+- Text in main menu to not confuse with in game mod manager
+
+--------------------------------------------------------
 ## 2.5.3 06/16/2019 2:19:10 AM
 #### Changed
 - All font styles updated to use current text styles
