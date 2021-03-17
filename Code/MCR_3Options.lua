@@ -5,7 +5,9 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated Dec 11th, 2018
+-- Updated March 16th, 2021
+
+-- StringIdBase this file 31-50
 
 function OnMsg.ModConfigReady()
     local StringIdBase = ModConfig.StringIdBase

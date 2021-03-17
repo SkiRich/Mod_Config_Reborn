@@ -5,13 +5,15 @@
 -- Author @SkiRich
 -- This mod is subject to the terms and conditions outlined in the LICENSE file included in this mod.
 -- Created Oct 14th, 2018
--- Updated June 16th, 2019
+-- Updated March 16th, 2021
 
 local lf_debug   = false  -- used only for certain ex() instance
 local lf_print   = false  -- Setup debug printing in local file
                           -- Use if lf_print then print("something") end
 
 local ModConfigWarnThread = false -- var to keep track of warning thread
+
+-- StringIDBase this file 21-30
 
 
 --[[
@@ -960,7 +962,7 @@ function OnMsg.ClassesBuilt()
       	"UniqueID", MCRMenuID01,
       	"Version", MCRObjVer,
         "ActionId", "idActionOpenModConfig",
-        "ActionName", T{ModConfig.StringIdBase + 3, "Mod Options"},
+        "ActionName", T{ModConfig.StringIdBase, "Mod Config Reborn"},
         "ActionToolbar", "mainmenu",
         --"OnActionEffect", "mode",
         "OnAction", function(self, host)
