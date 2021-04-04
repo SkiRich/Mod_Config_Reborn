@@ -1,4 +1,9 @@
 # Mod Config Reborn Changelog
+## v2.5.5 04/04/2021 2:27:18 PM
+#### Changed
+- MCR_docs.md file WaitForModConfig
+
+--------------------------------------------------------
 ## 2.5.4 03/16/2021 8:11:58 PM
 #### Changed
 - Text in main menu to not confuse with in game mod manager
