@@ -1,4 +1,21 @@
 # Mod Config Reborn Changelog
+## v2.6.0 09/05/2021 9:41:32 PM
+#### Changed
+- Versioning bump for Picard
+
+#### Added
+
+#### Removed
+
+#### Fixed Issues
+
+#### Open Issues
+
+#### Deprecated
+
+#### Todo
+
+--------------------------------------------------------
 ## v2.5.5 04/04/2021 2:27:18 PM
 #### Changed
 - MCR_docs.md file WaitForModConfig
